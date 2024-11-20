@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # GAKONDOTOUR 👋
-=======
-# Gakondotour 👋
->>>>>>> 2536c4174e40cb85a95e419161feb46be102a467
 
 <!--
 **Gakondotour/Gakondotour** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
