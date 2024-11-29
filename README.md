@@ -2,10 +2,12 @@
 
 ## Installation
     - pip install Flask
+    - pip install flask-cors
     - pip install Flask-SQLAlchemy
     - pip install python-dotenv
     - pip install Flask-WTF
     - pip install Flask-Migrate
+    - npm install axios
 
 
 <!--
