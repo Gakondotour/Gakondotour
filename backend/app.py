@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-# from models import Create
+from models import Create
 # Load environment variables if the env.py file exists
 if os.path.exists("env.py"):
     import env
