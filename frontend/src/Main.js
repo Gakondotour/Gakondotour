@@ -1,25 +1,30 @@
 // src/Main.js
 import React, { use } from "react";
 import { useState, useEffect } from "react";
-import img1 from "./images/IMG-20241105-WA0018.jpg";
-import img2 from "./images/IMG-20241105-WA0025.jpg";
-import img3 from "./images/IMG-20241105-WA0011.jpg";
-import img4 from "./images/IMG-20241105-WA0016.jpg";
+import img1 from "./images/IMG-20241105-WA0006.jpg";
+import img2 from "./images/IMG-20241105-WA0020.jpg";
+import img3 from "./images/IMG-20241105-WA0016.jpg";
+import img4 from "./images/IMG-20241105-WA0018.jpg";
+import img5 from "./images/IMG-20241105-WA0011.jpg";
+import img6 from "./images/IMG-20241105-WA0022.jpg";
+import img7 from "./images/IMG-20241105-WA0010.jpg";
+import img8 from "./images/IMG-20241105-WA0017.jpg";
 
-const imgs = [img1, img2, img3, img4];
+
+const imgs = [img1, img2, img3, img4, img5, img6, img7, img8];
 
 const Main = () => {
   const [slideshow, setSlideshow] = useState(0);
-  const [fade, setFade] = useState(false);
+  const [anime, setAnime] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(true);
+      setAnime(true);
       setTimeout(() => {
         setSlideshow((a) => (a + 1) % imgs.length); 
-        setFade(false);
-      }, 500);
-    }, 5000);
+        setAnime(false);
+      }, 1000);
+    }, 7500);
     return () => clearInterval(interval);
   }, []);
 
@@ -28,7 +33,7 @@ const Main = () => {
       <div className='main_img'>
         <img
           src={imgs[slideshow]}
-          className={`main_imgs ${fade ? 'exit' : 'enter'}`}
+          className={`main_imgs ${anime ? 'exit' : 'enter'}`}
           alt={`Image ${slideshow + 1}`}
         />
       </div>

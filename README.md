@@ -8,6 +8,12 @@
     - pip install Flask-WTF
     - pip install Flask-Migrate
     - npm install axios
+  
+
+    Run
+        npm install --legacy-peer-deps to resolve dependency conflicts.
+
+        Install web-vitals to using npm install web-vitals.
 
 
 <!--
