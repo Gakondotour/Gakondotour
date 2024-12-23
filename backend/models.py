@@ -1,4 +1,4 @@
-from __init__ import db
+from app import db
 
 class Create(db.Model):
     option = ("a",'b','c')
