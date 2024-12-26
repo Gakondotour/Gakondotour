@@ -1,12 +1,10 @@
-// frontend/src/App.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function App() {
+function Admin() {
   const [users, setUsers] = useState([]);
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     // Fetch users from backend
@@ -17,11 +15,11 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://127.0.0.1:5000/user', { username, email })
+    axios.post('http://127.0.0.1:5000/user', { username, password })
       .then(response => {
-        setUsers([...users, { username, email }]);
+        setUsers([...users, { username, password }]);
         setUsername('');
-        setEmail('');
+        setPassword('');
       })
       .catch(error => console.log(error));
   };
@@ -37,20 +35,20 @@ function App() {
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="password"
+          placeholder="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Add User</button>
       </form>
       <ul>
         {users.map((user, index) => (
-          <li key={index}>{user.username} - {user.email}</li>
+          <li key={index}>{user.username} - {user.password}</li>
         ))}
       </ul>
     </div>
   );
 }
 
-export default App;
+export default Admin;
