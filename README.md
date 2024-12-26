@@ -5,6 +5,7 @@
     - pip install Flask-SQLAlchemy
     - pip install flask-cors
     - npm install axios
+    - npm install react-router-dom
 
 
     - pip install python-dotenv

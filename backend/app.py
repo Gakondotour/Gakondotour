@@ -72,5 +72,14 @@ def book():
     return "You created a new book", 201
 
 
+@app.route('/delete/<int:user_id', methods['DELETE'])
+def delete_booking(user_id):
+    book = Booking.query.all()
+    if not book:
+        return {"message":"Error not found"}, 404
+
+    db.session.delete(book)
+    db.session.commit(book)
+
 if __name__ == '__main__':
     app.run(debug=False)
