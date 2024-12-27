@@ -37,8 +37,8 @@ class Booking(db.Model):
         "id": self.id,
         "fullName":self.name,
         "numberOfPeople": self.number_of_people,
-        "activities": self.activity,
-        "dateTime": self.date_time,
+        "activities": self.activity.name,
+        "dateTime": self.date_time.isoformat(),
         "phones": self.phone,
         "emails": self.email
         }

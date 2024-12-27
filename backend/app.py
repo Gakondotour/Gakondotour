@@ -6,7 +6,8 @@ from config import Config
 
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 app.config.from_object(Config)
 db.init_app(app)
 
@@ -72,9 +73,9 @@ def book():
     return "You created a new book", 201
 
 
-@app.route('/delete/<int:user_id', methods['DELETE'])
+@app.route('/delete/<int:user_id>', methods=['DELETE'])
 def delete_booking(user_id):
-    book = Booking.query.all()
+    book = Booking.query.get(user_id)
     if not book:
         return {"message":"Error not found"}, 404
 
@@ -82,4 +83,4 @@ def delete_booking(user_id):
     db.session.commit(book)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
