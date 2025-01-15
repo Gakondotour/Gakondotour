@@ -1,4 +1,30 @@
-## Hi there 👋
+# GAKONDOTOUR 👋
+
+## Installation
+    - pip install Flask
+    - pip install Flask-SQLAlchemy
+    - pip install python-dotenv
+    - pip install flask-cors
+    - pip install flask-admin
+    - pip install flask-bcrypt
+    - pip install flask-session
+    - pip install flask-jwt-extended
+    - pip install flask-login
+    
+    - npm install axios
+    - npm install react-router-dom
+
+
+   
+    - pip install Flask-WTF
+    - pip install Flask-Migrate
+    - pip install flask-mysql
+
+    Run
+        npm install --legacy-peer-deps to resolve dependency conflicts.
+
+        Install web-vitals to using npm install web-vitals.
+
 
 <!--
 **Gakondotour/Gakondotour** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
