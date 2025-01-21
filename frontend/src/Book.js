@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { MDBInput, MDBBtn } from 'mdb-react-ui-kit';
@@ -18,6 +18,25 @@ const Book = () => {
         email: "",
     });
 
+    const [bookedDates, setBookedDates] = useState({});
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+         // Fetch booked dates from the backend
+         const fetchBookedDates = async () => {
+            try {
+                const response = await axios.get(API_URL);
+                if (response.status === 200) {
+                    setBookedDates(response.data.booked_dates || {});
+                }
+            } catch (err) {
+                console.error("Failed to fetch booked dates:", err.message);
+            }
+        };
+        fetchBookedDates();
+    }, []);
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -33,9 +52,25 @@ const Book = () => {
             }
         } catch (error) {
             console.error("Error creating booking:", error.response?.data || error.message);
-            alert("Failed to create booking. Please check your input.");
+            setError(error.response?.data?.message || "Failed to create booking. Please try again.");
         }
     };
+
+     // Check if a date is disabled
+     const isDateDisabled = (date) => {
+        const selectedActivity = formData.activity;
+        const today = new Date().toISOString().split("T")[0];
+
+        if (date < today) {
+            return true; // Disable past dates
+        }
+
+        if (selectedActivity && bookedDates[selectedActivity]?.includes(date)) {
+            return true; // Disable already-booked dates for the selected activity
+        }
+        return false;
+    };
+
     
     
     return (
@@ -67,7 +102,7 @@ const Book = () => {
             <div className="col-md-6">
         <select 
         label="Activities"
-        className="selection custom-btn-white"
+        className="selection"
           name="activity"
           value={formData.activity}
           onChange={(e) => setFormData({...formData, activity:e.target.value})}
@@ -92,7 +127,14 @@ const Book = () => {
           type="date"
           name="date_time"
           value={formData.date_time}
-          onChange={(e) => setFormData({ ...formData, date_time: e.target.value })}
+          onChange={(e) => {
+            const selectedDate = e.target.value;
+            if (!isDateDisabled(selectedDate)) {
+                setFormData({ ...formData, date_time: selectedDate });
+            } else {
+                alert("Selected date is unavailable. Please choose a different date.");
+            }
+        }}
           required
         />
     </div>
@@ -117,6 +159,8 @@ const Book = () => {
             </MDBInput>            
             </div>
             </div>
+
+            {error && <p className="error-message">{error}</p>}
 
             <MDBBtn className='me-1' style={{color:"#fff", backgroundColor:"#9BBF6A"}} type="submit">Book</MDBBtn>
             <MDBBtn className='me-1' style={{color:"#fff", backgroundColor:"#E57373"}}  type="reset" onClick={() => setFormData({

@@ -26,18 +26,17 @@ const Nav = () =>  {
           <MDBIcon icon='bars' fas style={{color:"#ffffff"}} />
         </MDBNavbarToggler>
         <MDBCollapse navbar open={openNavSecond}>
-          <MDBNavbarNav>
-            <MDBNavbarLink active aria-current='page' style={{color:"#ffffff"}} href='#'>
-              Home
+          <MDBNavbarNav className='navbar-nav ' style={{marginLeft:"2vw"}}>
+            <MDBNavbarLink active aria-current='page' style={{color:"#ffffff"}} href='/'>
+              <strong>Home</strong>
             </MDBNavbarLink>
-            <MDBNavbarLink style={{color:"#ffffff"}} href='#'>Activities</MDBNavbarLink>
-            <MDBNavbarLink style={{color:"#ffffff"}} href='#'>Booking</MDBNavbarLink>
-            <MDBNavbarLink style={{color:"#ffffff"}} href='#'>Contact</MDBNavbarLink>
+            <MDBNavbarLink style={{color:"#ffffff"}} href='/ActivatyImages'><strong>Gallery</strong></MDBNavbarLink>
+            <MDBNavbarLink style={{color:"#ffffff"}} href='#'><strong>Contact</strong></MDBNavbarLink>
           </MDBNavbarNav>
         </MDBCollapse>
       </MDBContainer>
-      <img className="ms-auto navbar-nav"
-      style={{width:'100px', height:'75px', marginRight:'25px'}} 
+      <img className="ms-auto"
+      style={{width:'100px', height:'75px', marginRight:'25px', marginRight:"2vw"}} 
       src={logo} alt='logo includes name of the owner and phone number' />
     </MDBNavbar>
   );

@@ -1,6 +1,8 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Nav from "./Nav";
+import Footer from "./Footer";
 
 const ConfirmationBooking = () => {
   const location = useLocation();
@@ -33,6 +35,8 @@ const ConfirmationBooking = () => {
 
   return (
     <div className="confirmation-page">
+      <Nav />
+
       <h2>Confirm Your Booking</h2>
       <div>
         <p><strong>Full Name:</strong> {booking.name}</p>
@@ -46,6 +50,8 @@ const ConfirmationBooking = () => {
         <button onClick={handleConfirm}>Confirm Booking</button>
         <button onClick={() => navigate("/")}>Edit</button>
       </div>
+
+      <Footer />
     </div>
   );
 };

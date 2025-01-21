@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { MDBBtn } from "mdb-react-ui-kit";
 
 
 const Dashboard = () => {
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  let logoutTimeout;
 
   useEffect(() => {
     if (!token) {
@@ -14,7 +16,10 @@ const Dashboard = () => {
     } else {
       fetchData();
     }
-  }, [token,navigate]); // Added for a dependencies to useEffect
+
+    // Clear timeout if user navigates away
+    return () => clearTimeout(logoutTimeout);
+  }, [token, navigate]);
 
   const fetchData = async () => {
     try {
@@ -28,14 +33,29 @@ const Dashboard = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token"); // Clear the token
-    navigate("/login"); // Redirect to the login page
+    localStorage.removeItem("token");
+    navigate("/login");
   };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        logoutTimeout = setTimeout(logout, 5000);
+      } else {
+        clearTimeout(logoutTimeout);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
   const deleteData = async (id) => {
     try {
       await axios.delete("http://localhost:5000/dashboard", {
-        headers: { Authorization: `Bearer ${token}` }, data:{id}
+        headers: { Authorization: `Bearer ${token}` },
+        data: { id },
       });
       fetchData();
     } catch (error) {
@@ -44,22 +64,39 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      <button onClick={logout}>Logout</button>
-      <ul>
-        {data.map((x) => (
-          <li key={x.id}>
-            <strong>Full Name:</strong> {x.name} <br />
-            <strong>Number of People:</strong> {x.number_of_people} <br />
-            <strong>Activity:</strong> {x.activity} <br />
-            <strong>Date:</strong> {x.date_time} <br />
-            <strong>Phone:</strong> {x.phone} <br />
-            <strong>Email:</strong> {x.email} <br />
-            <button onClick={() => deleteData(x.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div style={{backgroundColor:"#fff"}}>
+      <h1 style={{ textAlign: "center" }}>Admin Dashboard</h1>
+      <table className="tableStyle">
+          <tr>
+            <th>Full Name</th>
+            <th>Number of People</th>
+            <th>Activity</th>
+            <th>Date</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Deletion</th>
+          </tr>
+
+          {data.map((x) => (
+            <tr key={x.id}>
+              <td>{x.name}</td>
+              <td>{x.number_of_people}</td>
+              <td>{x.activity}</td>
+              <td>{x.date_time}</td>
+              <td>{x.phone}</td>
+              <td>{x.email}</td>
+              <td>
+                <button className='buttonStyle' onClick={() => deleteData(x.id)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+      </table>
+
+  <MDBBtn className="me-1" color="success" style={{margin:"10px", cursor:"pointer" }}  onClick={logout}>
+        Logout
+      </MDBBtn>
     </div>
   );
 };

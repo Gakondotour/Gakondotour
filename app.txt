@@ -38,93 +38,38 @@ with app.app_context():
     db.create_all()
 
 
-# @app.route('/', methods=["GET", "POST"])
-# def home():
-
-#     if request.method == "GET":
-#         bookings = Booking.query.all()
-#         booking_list = [{
-#                 'id':book.id,
-#                 'name': book.name,
-#                 'number_of_people': book.number_of_people,
-#                 'activity': book.activity.value,
-#                 'date_time': book.date_time.strftime('%Y-%m-%d'),
-#                 'phone': book.phone,
-#                 'email': book.email
-#             } for book in bookings]
-#         return {'booking_list': booking_list}, 200
-
-#     if request.method == "POST":
-#         data = request.get_json()
-
-#         existing_booking = Booking.query.filter_by(date_time=data['date_time']).first()
-#         if existing_booking:
-#             return {"message": "This date and activity are already booked"}, 409
-            
-#         new_booking= Booking(
-#             name = data['name'], 
-#             number_of_people = data['number_of_people'],
-#             activity=ActivityOptions[data['activity']],
-#             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
-#             phone = data['phone'],
-#             email = data['email']
-#         )
-#     return {"message": "Booking data received"}, 201
-
-
 @app.route('/', methods=["GET", "POST"])
 def home():
+
     if request.method == "GET":
         bookings = Booking.query.all()
         booking_list = [{
-            'id': book.id,
-            'name': book.name,
-            'number_of_people': book.number_of_people,
-            'activity': book.activity.value,
-            'date_time': book.date_time.strftime('%Y-%m-%d'),
-            'phone': book.phone,
-            'email': book.email
-        } for book in bookings]
-
-        # Collect booked dates per activity
-        booked_dates = {}
-        for book in bookings:
-            activity = book.activity.value
-            if activity not in booked_dates:
-                booked_dates[activity] = []
-            booked_dates[activity].append(book.date_time.strftime('%Y-%m-%d'))
-
-        return {'booking_list': booking_list, 'booked_dates': booked_dates}, 200
+                'id':book.id,
+                'name': book.name,
+                'number_of_people': book.number_of_people,
+                'activity': book.activity.value,
+                'date_time': book.date_time.strftime('%Y-%m-%d'),
+                'phone': book.phone,
+                'email': book.email
+            } for book in bookings]
+        return {'booking_list': booking_list}, 200
 
     if request.method == "POST":
         data = request.get_json()
 
-        # Prevent booking for past dates
-        booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
-        today = datetime.now().date()
-        if booking_date < today:
-            return {"message": "Cannot book a past date"}, 400
-
-        # Check if the date is already booked for the same activity
-        existing_booking = Booking.query.filter_by(
-            date_time=booking_date, 
-        ).first()
+        existing_booking = Booking.query.filter_by(date_time=data['date_time']).first()
         if existing_booking:
             return {"message": "This date and activity are already booked"}, 409
-
-        # Add new booking
-        new_booking = Booking(
-            name=data['name'], 
-            number_of_people=data['number_of_people'],
+            
+        new_booking= Booking(
+            name = data['name'], 
+            number_of_people = data['number_of_people'],
             activity=ActivityOptions[data['activity']],
-            date_time=booking_date,
-            phone=data['phone'],
-            email=data['email']
+            date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
+            phone = data['phone'],
+            email = data['email']
         )
-        db.session.add(new_booking)
-        db.session.commit()
-        return {"message": "Booking created successfully"}, 201
-
+    return {"message": "Booking data received"}, 201
 
 
 @app.route('/confirmation_booking', methods=['POST'])
