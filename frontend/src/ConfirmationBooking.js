@@ -10,6 +10,7 @@ const ConfirmationBooking = () => {
   const API_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
   const booking = location.state?.booking;
+  const price = location.state?.price;
 
   if (!booking) {
     return <p>Error: No booking data found. Please go back and try again.</p>;
@@ -17,7 +18,7 @@ const ConfirmationBooking = () => {
 
   const handleConfirm = async () => {
     try {
-      const response = await axios.post(`${API_URL}/confirmation_booking`, booking, {
+      const response = await axios.post(`${API_URL}/confirmation_booking`, booking, price, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -45,6 +46,7 @@ const ConfirmationBooking = () => {
         <p><strong>Date:</strong> {booking.date_time}</p>
         <p><strong>Phone:</strong> {booking.phone}</p>
         <p><strong>Email:</strong> {booking.email}</p>
+        <h2>Total Price: ${price}</h2>
       </div>
       <div>
         <button onClick={handleConfirm}>Confirm Booking</button>

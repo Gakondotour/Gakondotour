@@ -40,7 +40,7 @@ const Dashboard = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        logoutTimeout = setTimeout(logout, 5000);
+        logoutTimeout = setTimeout(logout, 5000000);
       } else {
         clearTimeout(logoutTimeout);
       }
@@ -74,6 +74,7 @@ const Dashboard = () => {
             <th>Date</th>
             <th>Phone</th>
             <th>Email</th>
+            <th>Price</th>
             <th>Deletion</th>
           </tr>
 
@@ -85,6 +86,7 @@ const Dashboard = () => {
               <td>{x.date_time}</td>
               <td>{x.phone}</td>
               <td>{x.email}</td>
+              <td>{x.price}</td>
               <td>
                 <button className='buttonStyle' onClick={() => deleteData(x.id)}>
                   Delete

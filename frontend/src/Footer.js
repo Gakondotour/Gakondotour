@@ -21,20 +21,19 @@ const Footer = () => {
         </div>
 
         <div>
-          <a href="" className="me-4 text-reset">
-            <MDBIcon style={{ color: "#ffffff" }} fab icon="facebook-f" />
+          <a
+            href="https://www.facebook.com/share/1K4n33DP7R/?mibextid=wwXIfr"
+            target="_blank"
+            className="me-4 text-reset"
+          >
+            <MDBIcon style={{ color: "#ffffff" }} className="link-hover" fab icon="facebook-f" />
           </a>
-          <a href="" className="me-4 text-reset">
-            <MDBIcon style={{ color: "#ffffff" }} fab icon="x" />
-          </a>
-          <a href="" className="me-4 text-reset">
-            <MDBIcon style={{ color: "#ffffff" }} fab icon="google" />
-          </a>
-          <a href="" className="me-4 text-reset">
-            <MDBIcon style={{ color: "#ffffff" }} fab icon="instagram" />
-          </a>
-          <a href="" className="me-4 text-reset">
-            <MDBIcon style={{ color: "#ffffff" }} fab icon="linkedin" />
+          <a
+            href="https://www.instagram.com/gakondo_tour?igsh=YzE5N2Zwa2x4bmw%3D&utm_source=qr"
+            target="_blank"
+            className="me-4 text-reset"
+          >
+            <MDBIcon style={{ color: "#ffffff" }} className="link-hover" fab icon="instagram" />
           </a>
         </div>
       </section>
@@ -54,7 +53,7 @@ const Footer = () => {
                 />
                 GAKONDO TOUR
               </h6>
-              <p>
+              <p style={{ color: "#c4c3c3" }}>
                 Discover Rwanda like never before with Gakondo Tours! We offer
                 an array of unforgettable experiences, including hiking, boat
                 trips, banana beer demonstrations, and the scenic Congo Nile
@@ -65,55 +64,6 @@ const Footer = () => {
                 your Rwandan journey!
               </p>
             </MDBCol>
-
-            {/* <MDBCol md='2' lg='2' xl='2' className='mx-auto mb-4'>
-              <h6 className='text-uppercase fw-bold mb-4'>Products</h6>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Angular
-                </a>
-              </p>
-              <p>
-                <a href='#!' className='text-reset'>
-                  React
-                </a>
-              </p>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Vue
-                </a>
-              </p>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Laravel
-                </a>
-              </p>
-            </MDBCol>
-
-            <MDBCol md='3' lg='2' xl='2' className='mx-auto mb-4'>
-              <h6 className='text-uppercase fw-bold mb-4'>Useful links</h6>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Pricing
-                </a>
-              </p>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Settings
-                </a>
-              </p>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Orders
-                </a>
-              </p>
-              <p>
-                <a href='#!' className='text-reset'>
-                  Help
-                </a>
-              </p>
-            </MDBCol> */}
-
             <MDBCol md="4" lg="3" xl="3" className="mx-auto mb-md-0 mb-4">
               <h6
                 className="text-uppercase fw-bold mb-4"
@@ -154,11 +104,11 @@ const Footer = () => {
         className="text-center p-4"
         style={{ backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#ffffff" }}
       >
-        © 2025 Copyright:
+        © 2025 Copyright:{" "}
         <a
-          className="text-reset fw-bold"
-          href="www.linkedin.com/in/christian-softwaredeveloper091994"
-          target="blank"
+          className="text-reset fw-bold link-hover"
+          href="https://www.linkedin.com/in/ahmed-alamassi-4655b9252/"
+          target="_blank"
         >
           Ahmed (Christian) Alamassi
         </a>

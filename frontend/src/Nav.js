@@ -27,11 +27,11 @@ const Nav = () =>  {
         </MDBNavbarToggler>
         <MDBCollapse navbar open={openNavSecond}>
           <MDBNavbarNav className='navbar-nav ' style={{marginLeft:"2vw"}}>
-            <MDBNavbarLink active aria-current='page' style={{color:"#ffffff"}} href='/'>
+            <MDBNavbarLink active aria-current='page' className='link-hover' style={{color:"#ffffff"}} href='/'>
               <strong>Home</strong>
             </MDBNavbarLink>
-            <MDBNavbarLink style={{color:"#ffffff"}} href='/ActivatyImages'><strong>Gallery</strong></MDBNavbarLink>
-            <MDBNavbarLink style={{color:"#ffffff"}} href='#'><strong>Contact</strong></MDBNavbarLink>
+            <MDBNavbarLink style={{color:"#ffffff"}} className='link-hover' href='/ActivatyImages'><strong>Gallery</strong></MDBNavbarLink>
+            <MDBNavbarLink style={{color:"#ffffff"}} className='link-hover' href='#'><strong>Contact</strong></MDBNavbarLink>
           </MDBNavbarNav>
         </MDBCollapse>
       </MDBContainer>
