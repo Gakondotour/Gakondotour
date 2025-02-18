@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, User, Booking, ActivityOptions
+from models import db, User, Booking, ActivityOptions, Contact
 from config import Config
 from flask import Blueprint
 from datetime import datetime, timedelta
@@ -38,40 +38,6 @@ with app.app_context():
     db.create_all()
 
 
-# @app.route('/', methods=["GET", "POST"])
-# def home():
-
-#     if request.method == "GET":
-#         bookings = Booking.query.all()
-#         booking_list = [{
-#                 'id':book.id,
-#                 'name': book.name,
-#                 'number_of_people': book.number_of_people,
-#                 'activity': book.activity.value,
-#                 'date_time': book.date_time.strftime('%Y-%m-%d'),
-#                 'phone': book.phone,
-#                 'email': book.email
-#             } for book in bookings]
-#         return {'booking_list': booking_list}, 200
-
-#     if request.method == "POST":
-#         data = request.get_json()
-
-#         existing_booking = Booking.query.filter_by(date_time=data['date_time']).first()
-#         if existing_booking:
-#             return {"message": "This date and activity are already booked"}, 409
-            
-#         new_booking= Booking(
-#             name = data['name'], 
-#             number_of_people = data['number_of_people'],
-#             activity=ActivityOptions[data['activity']],
-#             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
-#             phone = data['phone'],
-#             email = data['email']
-#         )
-#     return {"message": "Booking data received"}, 201
-
-
 @app.route('/', methods=["GET", "POST"])
 def home():
     if request.method == "GET":
@@ -89,12 +55,14 @@ def home():
         # Collect booked dates per activity
         booked_dates = {}
         for book in bookings:
-            activity = book.activity.value
-            if activity not in booked_dates:
-                booked_dates[activity] = []
-            booked_dates[activity].append(book.date_time.strftime('%Y-%m-%d'))
-
-        return {'booking_list': booking_list, 'booked_dates': booked_dates}, 200
+            date_str = book.date_time.strftime('%Y-%m-%d')
+            if date_str not in booked_dates:
+                booked_dates[date_str] = []
+            booked_dates[date_str]
+        return {
+            "bookings": booking_list,
+            "booked_dates": booked_dates
+        }
 
     if request.method == "POST":
         data = request.get_json()
@@ -105,12 +73,12 @@ def home():
         if booking_date < today:
             return {"message": "Cannot book a past date"}, 400
 
-        # Check if the date is already booked for the same activity
+        # Check if the date is already booked
         existing_booking = Booking.query.filter_by(
             date_time=booking_date, 
         ).first()
         if existing_booking:
-            return {"message": "This date and activity are already booked"}, 409
+            return {"message": "The selected date is already booked. Please choose a different date."}, 409
 
         # Add new booking
         new_booking = Booking(
@@ -121,8 +89,6 @@ def home():
             phone=data['phone'],
             email=data['email']
         )
-        db.session.add(new_booking)
-        db.session.commit()
         return {"message": "Booking created successfully"}, 201
 
 
@@ -208,7 +174,7 @@ def manage_data():
         new_booking= Booking(
             name = data['name'], 
             number_of_people = data['number_of_people'],
-             activity=ActivityOptions[data['activity']],
+            activity=ActivityOptions[data['activity']],
             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
             phone = data['phone'],
             email = data['email']
@@ -233,6 +199,69 @@ def manage_data():
         return {"message": "Booking deleted successfully"}, 200
     return {"message": "Booking not found"}, 404
 
+
+@app.route("/contact", methods=['GET', 'POST'])
+def contact():
+    if request.method == 'GET':
+        contacts = Contact.query.all()
+        contact_list = [{
+            'id': contact.id,
+            'name': contact.name,
+            'email': contact.email,
+            'text': contact.text
+        } for contact in contacts]
+        return{'contact_list': contact_list}
+
+    if request.method == 'POST':
+        data = request.get_json()
+        new_contact = Contact(
+            name = data['name'],
+            email = data['email'],
+            text = data['text']
+        )
+        db.session.add(new_contact)
+        db.session.commit()
+        return {"message": "Data added successfully"}, 201
+
+
+# Admin/Manager Contact
+@app.route('/contact_admin', methods=['GET', 'POST', 'DELETE'])
+@jwt_required()
+def manage_text():
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(username=current_user).first()
+    if user.is_admin not in ['admin', 'manager']:
+        return {"message": "Access denied"}, 403
+
+    if request.method == 'GET':
+        contacts = Contact.query.all()
+        contact_list = [{
+            'id': contact.id,
+            'name': contact.name,
+            'email': contact.email,
+            'text': contact.text
+            } for contact in contacts]
+        return {'contact_list': contact_list}, 200
+
+    if request.method == 'POST':
+        data = request.json
+        new_contact = Contact(
+            name=data['name'],
+            email=data['email'],
+            text=data['text']
+        )
+        db.session.add(new_contact)
+        db.session.commit()
+        return {"message": "Data added successfully"}, 201
+
+    if request.method == 'DELETE':
+        data = request.get_json()
+        contact_to_delete = Contact.query.get(data['id'])
+        if contact_to_delete:
+            db.session.delete(contact_to_delete)
+            db.session.commit()
+            return {"message": "Contact deleted successfully"}, 200
+        return {"message": "Contact not found"}, 404
 
 
 if __name__ == '__main__':
