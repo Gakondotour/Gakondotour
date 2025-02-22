@@ -7,6 +7,9 @@ import Dashboard from './Dashboard';
 import Login from "./Login";
 import ActivityImages from './ActivityImages';
 import Book from './Book';
+import PageNotFound from './404';
+import Contact from './Contact';
+import ContactAdmin from './ContactAdmin';
 
 
 function App() {
@@ -21,6 +24,9 @@ function App() {
           <Route />
           <Route path='/ActivatyImages' element={<ActivityImages />} />
           <Route path='/Book' element={<Book />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/contact_admin' element={<ContactAdmin />} />
+          <Route path='*' element={<PageNotFound />} />
         </Routes>
       </div>
     </Router>

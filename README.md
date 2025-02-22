@@ -13,6 +13,10 @@
     
     - npm install axios
     - npm install react-router-dom
+    - npm install react-datepicker --legacy-peer-deps
+    - npm i react-custom-alert --legacy-peer-deps
+    - npm install emailjs-com --legacy-peer-deps
+
 
 
    

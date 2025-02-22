@@ -20,16 +20,19 @@ import Footer from './Footer';
 
 
 const ActivityImages = () => {
-
     const imgs = [img2, img13, img14, img5, img16, img17, img8, img9, img10, img11, img12, img3, img4, img15, img6, img7 ]
+
     return(
-        <div>
+        <div style={{backgroundColor:"#fff"}}>
             <Nav />
             <div className='diVactivityImgs'> 
-            <h2 style={{color:"black", textAlign:"left"}}>OUR ACTIVITIES' GALLERY</h2>
+            <h2 style={{color:"black", textAlign:"left"}}>OUR ACTIVITIES GALLERY</h2>
             {imgs.map((img, value) => (
-                <img className="activityImgs" key={value} src={img} target alt={`Activity ${value+1}`} />
-            
+                <img className="activityImgs" 
+                key={value} 
+                src={img} 
+                target 
+                alt={`Activity ${value+1}`} />
             ))}
             </div>
             <Footer />

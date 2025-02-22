@@ -31,7 +31,7 @@ const Nav = () =>  {
               <strong>Home</strong>
             </MDBNavbarLink>
             <MDBNavbarLink style={{color:"#ffffff"}} className='link-hover' href='/ActivatyImages'><strong>Gallery</strong></MDBNavbarLink>
-            <MDBNavbarLink style={{color:"#ffffff"}} className='link-hover' href='#'><strong>Contact</strong></MDBNavbarLink>
+            <MDBNavbarLink style={{color:"#ffffff"}} className='link-hover' href='/contact'><strong>Contact</strong></MDBNavbarLink>
           </MDBNavbarNav>
         </MDBCollapse>
       </MDBContainer>

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MDBBtn, MDBNavbarLink } from "mdb-react-ui-kit";
 
-const Dashboard = () => {
+const ContactAdmin = () => {
   const [data, setData] = useState([]);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -22,10 +22,11 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/dashboard", {
+      const response = await axios.get("http://localhost:5000/contact_admin", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setData(response.data.booking_list || []);
+
+      setData(response.data.contact_list || []);
     } catch (error) {
       console.error(error);
     }
@@ -52,7 +53,7 @@ const Dashboard = () => {
 
   const deleteData = async (id) => {
     try {
-      await axios.delete("http://localhost:5000/dashboard", {
+      await axios.delete("http://localhost:5000/contact_admin", {
         headers: { Authorization: `Bearer ${token}` },
         data: { id },
       });
@@ -64,30 +65,21 @@ const Dashboard = () => {
 
   return (
     <div style={{ backgroundColor: "#fff" }}>
-      <h1 style={{ textAlign: "center" }}>Admin Dashboard</h1>
+      <h1 style={{ textAlign: "center" }}>messages</h1>
       <table className="tableStyle">
         <tr>
           <th>Full Name</th>
-          <th>Number of People</th>
-          <th>Activity</th>
-          <th>Date</th>
-          <th>Phone</th>
           <th>Email</th>
-          <th>Price</th>
+          <th>Text</th>
           <th>Deletion</th>
         </tr>
 
-        {data.map((x) => (
+        {data.length > 0 ? (
+            data.map((x) => (
           <tr key={x.id}>
             <td>{x.name}</td>
-            <td>{x.number_of_people}</td>
-            <td>{Array.isArray(x.activity)
-              ? x.activity.map((act) => act.replace(/_/g, " ")).join(", ")
-              : x.activity.replace(/_/g, " ")}</td>
-            <td>{x.date_time}</td>
-            <td>{x.phone}</td>
             <td>{x.email}</td>
-            <td>{x.price ? `$${x.price}` : "NON"}</td>
+            <td>{x.text}</td>
             <td>
               <MDBBtn
                 className="me-1"
@@ -106,13 +98,13 @@ const Dashboard = () => {
               </MDBBtn>
             </td>
           </tr>
-        ))}
+        ))): null}
       </table>
 
       <MDBBtn
         className="me-1"
         color="success"
-        style={{ margin: "10px", cursor: "pointer", position:'absolute', bottom:"0%" }}
+        style={{ margin: "10px", cursor: "pointer", position:'absolute', bottom:"0%"  }}
         onClick={logout}
       >
         Logout
@@ -120,12 +112,12 @@ const Dashboard = () => {
       <MDBNavbarLink
         style={{ margin: "10px", cursor: "pointer", color: "darkGreen"}}
         className="link-hover"
-        href="/contact_admin"
+        href="/Dashboard"
       >
-        <strong>Texts</strong>
+        <strong>Dashboard</strong>
       </MDBNavbarLink>
     </div>
   );
 };
 
-export default Dashboard;
+export default ContactAdmin;

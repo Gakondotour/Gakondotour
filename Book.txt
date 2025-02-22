@@ -5,6 +5,7 @@ import { MDBInput, MDBBtn } from "mdb-react-ui-kit";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+
 const Book = () => {
   const API_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000"; // Flask API URL
   const navigate = useNavigate();
@@ -16,29 +17,25 @@ const Book = () => {
     date_time: "",
     phone: "",
     email: "",
-    bookingType: "", // Track whether user selects per day or per hour
   });
 
   const [bookedDates, setBookedDates] = useState({});
   const [error, setError] = useState("");
   const [price, setPrice] = useState(null); // To track and display the calculated price
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
-
 
   const activityPrices = {
     CONGO_NILE_TRAIL: 50,
-    BOAT_TRIP: 60,
+    GISENYI_CITY_TOUR: 30,
     COFFEE_AND_TEA_TOUR: 40,
     ISLAND_TOURS: 120,
   };
 
   const activityPricesH = {
-    RUBONA_HIKING: 10,
-    GISENYI_CITY_TOUR: 30,
-    RURAL_AREA_TOUR: 40,
-    CULTURE_TOURS: 80,
-    BANANA_BEER_DEMONSTRATION: 30,
+    RUBONA_HIKING_2: 10,
+    BOAT_TRIP_1: 60,
+    RURAL_AREA_TOUR_3: 40,
+    CULTURE_TOURS_2: 80,
+    BANANA_BEER_DEMONSTRATION_2: 30,
   };
 
   useEffect(() => {
@@ -55,16 +52,14 @@ const Book = () => {
     };
     fetchBookedDates();
   }, []);
-
+  
 
   useEffect(() => {
     // Update price whenever activity or number of people changes
     if (formData.activity && formData.number_of_people) {
       const activityPrice = activityPrices[formData.activity] || 0;
       const activityPriceH = activityPricesH[formData.activity] || 0;
-      const total =
-        activityPrice * parseInt(formData.number_of_people, 10) ||
-        activityPriceH * parseInt(formData.number_of_people, 10);
+      const total = activityPrice * parseInt(formData.number_of_people, 10) || activityPriceH * parseInt(formData.number_of_people, 10) ;
       setPrice(total);
     } else {
       setPrice(null);
@@ -74,65 +69,28 @@ const Book = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormSubmitted(true);
 
-    if (formData.activity.length === 0) {
-      return; // Stop submission if no activity is selected
-    }
-    
-    // If booking per hour, send multiple requests (one per selected activity)
-    if (
-      formData.bookingType === "perHour" &&
-      Array.isArray(formData.activity)
-    ) {
-      try {
-        await Promise.all(
-          formData.activity.map(async (activity) => {
-            await axios.post(
-              `${API_URL}`,
-              { ...formData, activity }, // Send each activity separately
-              { headers: { "Content-Type": "application/json" } }
-            );
-          })
-        );
+    try {
+      const response = await axios.post(`${API_URL}`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
+      if (response.status === 201) {
         navigate("/confirmation_booking", {
           state: { booking: formData, price },
         });
-      } catch (error) {
-        console.error(
-          "Error creating booking:",
-          error.response?.data || error.message
-        );
-        setError(
-          error.response?.data?.message ||
-            "Failed to create booking. Please try again."
-        );
+      } else {
+        console.warn(`Unexpected response status: ${response.status}`);
       }
-    } else {
-      // For per day bookings, send a single request
-      try {
-        const response = await axios.post(`${API_URL}`, formData, {
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (response.status === 201) {
-          navigate("/confirmation_booking", {
-            state: { booking: formData, price },
-          });
-        } else {
-          console.warn(`Unexpected response status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error(
-          "Error creating booking:",
-          error.response?.data || error.message
-        );
-        setError(
-          error.response?.data?.message ||
-            "Failed to create booking. Please try again."
-        );
-      }
+    } catch (error) {
+      console.error(
+        "Error creating booking:",
+        error.response?.data || error.message
+      );
+      setError(
+        error.response?.data?.message ||
+          "Failed to create booking. Please try again."
+      );
     }
   };
 
@@ -154,27 +112,6 @@ const Book = () => {
     }
     return false;
   };
-
-  useEffect(() => {
-    if (formData.activity && formData.number_of_people) {
-      let total = 0;
-
-      if (Array.isArray(formData.activity)) {
-        // If booking per hour, sum up all selected activities
-        total = formData.activity.reduce(
-          (sum, activity) => sum + (activityPricesH[activity] || 0),
-          0
-        );
-      } else {
-        total = activityPrices[formData.activity] || 0;
-      }
-
-      total *= parseInt(formData.number_of_people, 10) || 0;
-      setPrice(total);
-    } else {
-      setPrice(null);
-    }
-  }, [formData.activity, formData.number_of_people]);
 
   return (
     <>
@@ -214,104 +151,56 @@ const Book = () => {
 
           <div className="col-md-6">
             <select
+              label="Activities"
               className="selection"
-              name="bookingType"
-              value={formData.bookingType}
+              name="activity"
+              value={formData.activity}
               onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  bookingType: e.target.value,
-                  activity: "",
-                })
+                setFormData({ ...formData, activity: e.target.value })
               }
-              required
+              
             >
-              <option value="">Select Booking Type</option>
-              <option value="perDay">Per Day</option>
-              <option value="perHour">Per Hour</option>
+              <option style={{ color: "#dddddd" }} value="">
+                Select an activity per day
+              </option>
+              {Object.keys(activityPrices).map((activity) => (
+                <option
+                  key={activity}
+                  style={{ color: "#fff" }}
+                  value={activity}
+                >
+                  {activity.replace(/_/g, " ").toLowerCase()}
+                </option>
+              ))}
             </select>
           </div>
 
-          {formData.bookingType === "perDay" && (
-            <div className="col-md-6">
-              <select
-                className="selection"
-                name="activity"
-                value={formData.activity}
-                onChange={(e) =>
-                  setFormData({ ...formData, activity: e.target.value })
-                }
-                required
-              >
-                <option value="">Select an activity per day</option>
-                {Object.keys(activityPrices).map((activity) => (
-                  <option key={activity} value={activity}>
-                    {activity.replace(/_/g, " ")}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-{formData.bookingType === "perHour" && (
-  <div className="col-md-6">
-    <div className="dropdown">
-      <button
-        className="selection"
-        type="button"
-        onClick={() => setDropdownOpen(!dropdownOpen)} // Toggle dropdown
-      >
-        Select activities per hour
-      </button>
-
-      {dropdownOpen && ( // Conditionally show dropdown content
-        <ul className="dropdown-menu show" style={{ display: "block" }}>
-          {Object.keys(activityPricesH).map((activity) => {
-            const hours =
-              {
-                RUBONA_HIKING: 2,
-                GISENYI_CITY_TOUR: 1,
-                RURAL_AREA_TOUR: 3,
-                CULTURE_TOURS: 2,
-                BANANA_BEER: 2,
-              }[activity] || 1; // Default to 1 hour if not listed
-
-            return (
-              <li key={activity} className="dropdown-item">
-                <input
-                  type="checkbox"
+          <div className="col-md-6">
+            <select
+              label="Activities"
+              className="selection"
+              name="activity"
+              value={formData.activity}
+              onChange={(e) =>
+                setFormData({ ...formData, activity: e.target.value })
+              }
+              
+            >
+              <option style={{ color: "#dddddd" }} value="">
+                Select an activity per hour
+              </option>
+              {Object.keys(activityPricesH).map((activity) => (
+                <option
+                  key={activity}
+                  style={{ color: "#fff" }}
                   value={activity}
-                  checked={formData.activity.includes(activity)}
-                  onChange={(e) => {
-                    const selectedActivities = [...formData.activity];
-                    if (e.target.checked) {
-                      selectedActivities.push(activity);
-                    } else {
-                      const index = selectedActivities.indexOf(activity);
-                      if (index > -1) {
-                        selectedActivities.splice(index, 1);
-                      }
-                    }
-                    setFormData({
-                      ...formData,
-                      activity: selectedActivities,
-                    });
-                  }}
-                />{" "}
-                {activity.replace(/_/g, " ")} {hours}/h
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
-    {/* Display validation message if no activity is selected */}
-    {formSubmitted && formData.activity.length === 0 && (
-      <p className="text-danger">Please select at least one activity.</p>
-    )}
-  </div>
-)}
-
+                >
+                  {activity.replace(/_/g, " ").toLowerCase()}{'/h'}
+                </option>
+              ))}
+            </select>
+          </div>
+          
           <div className="col-md-6">
             <DatePicker
               className="date"

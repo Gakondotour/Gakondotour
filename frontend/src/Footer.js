@@ -41,7 +41,7 @@ const Footer = () => {
       <section className="">
         <MDBContainer className="text-center text-md-start mt-5">
           <MDBRow className="mt-3">
-            <MDBCol md="3" lg="4" xl="3" className="mx-auto mb-4">
+            <MDBCol md="4" lg="4" xl="4" className="mx-auto mb-4">
               <h6
                 className="text-uppercase fw-bold mb-4"
                 style={{ color: "#ffffff" }}
@@ -51,7 +51,7 @@ const Footer = () => {
                   icon="gem"
                   className="me-3"
                 />
-                GAKONDO TOUR
+                KIVU GAKONDO TOUR
               </h6>
               <p style={{ color: "#c4c3c3" }}>
                 Discover Rwanda like never before with Gakondo Tours! We offer

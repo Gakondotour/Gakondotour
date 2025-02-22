@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, User, Booking, ActivityOptions, Contact
+from models import db, User, Booking, Contact
 from config import Config
 from flask import Blueprint
 from datetime import datetime, timedelta
@@ -46,7 +46,7 @@ def home():
             'id': book.id,
             'name': book.name,
             'number_of_people': book.number_of_people,
-            'activity': book.activity.value,
+            'activity': book.activity,
             'date_time': book.date_time.strftime('%Y-%m-%d'),
             'phone': book.phone,
             'email': book.email
@@ -84,7 +84,7 @@ def home():
         new_booking = Booking(
             name=data['name'], 
             number_of_people=data['number_of_people'],
-            activity=ActivityOptions[data['activity']],
+            activity=data['activity'],
             date_time=booking_date,
             phone=data['phone'],
             email=data['email']
@@ -102,7 +102,7 @@ def confirmation_booking():
         new_booking= Booking(
             name = data['name'], 
             number_of_people = data['number_of_people'],
-            activity=ActivityOptions[data['activity']],
+            activity=data['activity'],
             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
             phone = data['phone'],
             email = data['email']
@@ -162,7 +162,7 @@ def manage_data():
                 'id':book.id,
                 'name': book.name,
                 'number_of_people': book.number_of_people,
-                'activity': book.activity.value,
+                'activity': book.activity,
                 'date_time': book.date_time.strftime('%Y-%m-%d'),
                 'phone': book.phone,
                 'email': book.email
@@ -174,7 +174,7 @@ def manage_data():
         new_booking= Booking(
             name = data['name'], 
             number_of_people = data['number_of_people'],
-            activity=ActivityOptions[data['activity']],
+            activity=data['activity'],
             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
             phone = data['phone'],
             email = data['email']

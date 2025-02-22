@@ -16,33 +16,24 @@ const ConfirmationBooking = () => {
   const API_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
   const formRef = useRef(); // Declare all hooks at the top level
 
-  const booking = location.state?.booking || {};
+  const booking = location.state?.booking;
   const price = location.state?.price;
 
-  const sendEmail = async () => {
-    if (!booking || !booking.email) {
-      toast.error("Invalid booking details. Cannot send email.");
-      return;
-    }
+  const sendEmail = async (e) => {
+    e.preventDefault(); // Prevent form submission default behavior
+    console.log("Form reference:", formRef.current); // Debugging
 
-    const templateParams = {
-      name: booking.name,
-      email: booking.email,
-      price: price,
-    };
-
-    try {
-      const result = await emailjs.send(
-        "service_5jhkeo7", // Your EmailJS Service ID
-        "template_p2u0e6m", // Your EmailJS Template ID
-        templateParams,
-        "rzYru0Szrq0A6llqW" // Your Public Key
+    try {const result = await emailjs.sendForm(
+        "service_vzovajh", // Replace with your service ID
+        "template_p2u0e6m", // Replace with your template ID
+        formRef.current, // Correctly reference `form.current`
+        "rzYru0Szrq0A6llqW" // Replace with your public key
       );
-      console.log("Sending email with:", templateParams);
       console.log("Email successfully sent:", result.text);
+      toast.success("Email sent successfully!");
     } catch (error) {
       console.error("Error sending email:", error);
-      toast.error("Invalid booking details. Cannot send email.");
+      toast.error("Failed to send email. Please try again.");
     }
   };
 
@@ -51,8 +42,7 @@ const ConfirmationBooking = () => {
     try {
       const response = await axios.post(
         `${API_URL}/confirmation_booking`,
-        { ...booking, price },
-        { sendEmail },
+        { ...booking, price },{sendEmail},
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -60,15 +50,9 @@ const ConfirmationBooking = () => {
 
       if (response.status === 201) {
         setIsDisabled(true);
-        sendEmail();
-
         toast.success(
           <div style={{ width: "100%" }}>
-            <p>
-              Thank you, your booking has been successfully confirmed and you
-              will receive an email within 24 hours to guide you through the
-              payment steps.
-            </p>
+            <p>Thank you. Your booking has been successfully confirmed.</p>
             <button
               onClick={() => {
                 navigate("/"); // Redirect directly to the home page
@@ -98,6 +82,7 @@ const ConfirmationBooking = () => {
       toast.error("Failed to confirm booking. Please try again.");
     }
   };
+
 
   // Early return moved below hook declarations
   if (!booking) {
@@ -129,13 +114,10 @@ const ConfirmationBooking = () => {
           </p>
           <p style={{ color: "black" }}>
             <strong style={{ padding: "10px" }}>Activity:</strong>{" "}
-            {Array.isArray(booking.activity)
-              ? booking.activity.map((act) => act.replace(/_/g, " ")).join(", ")
-              : booking.activity.replace(/_/g, " ")}
+            {booking.activity}
           </p>
           <p style={{ color: "black" }}>
-            <strong style={{ padding: "10px" }}>Date:</strong>{" "}
-            {booking.date_time}
+            <strong style={{ padding: "10px" }}>Date:</strong> {booking.date_time}
           </p>
           <p style={{ color: "black" }}>
             <strong style={{ padding: "10px" }}>Phone:</strong> {booking.phone}
