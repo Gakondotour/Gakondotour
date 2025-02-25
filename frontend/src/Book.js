@@ -72,6 +72,11 @@ const Book = () => {
   }, [formData.activity, formData.number_of_people]);
 
 
+  useEffect(() => {
+    console.log("Price updated:", price);
+  }, [price]);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormSubmitted(true);
@@ -175,6 +180,7 @@ const Book = () => {
       setPrice(null);
     }
   }, [formData.activity, formData.number_of_people]);
+  
 
   return (
     <>
@@ -265,7 +271,7 @@ const Book = () => {
       </button>
 
       {dropdownOpen && ( // Conditionally show dropdown content
-        <ul className="dropdown-menu show" style={{ display: "block" }}>
+        <ul className="dropdown-menu show custom-dropdown" style={{ display: "block" }}>
           {Object.keys(activityPricesH).map((activity) => {
             const hours =
               {

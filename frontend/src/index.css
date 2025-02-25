@@ -202,6 +202,19 @@ option{
   padding:3px
 }
 
+/* styles.css */
+.custom-dropdown {
+  background-color:rgb(79, 90, 59, 0.7) !important;
+}
+
+.dropdown-item {
+  color: #fff !important;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(39, 44, 29, 0.9) !important;
+}
+
 
 /* confirmation-page__________________________________ */
 .confirmationPage{

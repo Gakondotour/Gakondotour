@@ -11,13 +11,13 @@ import Footer from "./Footer";
 const ConfirmationBooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [redirect, setRedirect] = useState(false);
+  // const [redirect, setRedirect] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const API_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
-  const formRef = useRef(); // Declare all hooks at the top level
+  // const formRef = useRef(); // Declare all hooks at the top level
 
   const booking = location.state?.booking || {};
-  const price = location.state?.price;
+  const price = location.state?.price || 0;
 
   const sendEmail = async () => {
     if (!booking || !booking.email) {
@@ -46,13 +46,15 @@ const ConfirmationBooking = () => {
     }
   };
 
+
   //function to confirm booking
   const handleConfirm = async () => {
     try {
+      localStorage.setItem(`price_${booking.email}`, price); // Save price in localStorage
+      
       const response = await axios.post(
         `${API_URL}/confirmation_booking`,
         { ...booking, price },
-        { sendEmail },
         {
           headers: { "Content-Type": "application/json" },
         }

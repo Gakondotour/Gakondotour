@@ -66,21 +66,21 @@ const ContactAdmin = () => {
   return (
     <div style={{ backgroundColor: "#fff" }}>
       <h1 style={{ textAlign: "center" }}>messages</h1>
-      <table className="tableStyle">
+      <table className="tableStyle" style={{ borderCollapse: "collapse", width: "100%" }}>
         <tr>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Text</th>
-          <th>Deletion</th>
+          <th style={{ border: "2px solid black", padding: "8px" }}>Full Name</th>
+          <th style={{ border: "2px solid black", padding: "8px" }}>Email</th>
+          <th style={{ border: "2px solid black", padding: "8px" }}>Text</th>
+          <th style={{ border: "2px solid black", padding: "8px" }}>Deletion</th>
         </tr>
 
         {data.length > 0 ? (
             data.map((x) => (
           <tr key={x.id}>
-            <td>{x.name}</td>
-            <td>{x.email}</td>
-            <td>{x.text}</td>
-            <td>
+            <td style={{ border: "2px solid black", padding: "8px" }}>{x.name}</td>
+            <td style={{ border: "2px solid black", padding: "8px" }}>{x.email}</td>
+            <td style={{ border: "2px solid black", padding: "8px" }}>{x.text}</td>
+            <td style={{ border: "2px solid black", padding: "8px" }}>
               <MDBBtn
                 className="me-1"
                 color="danger"
