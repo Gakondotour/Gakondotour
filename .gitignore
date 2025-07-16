@@ -22,3 +22,11 @@ rad.json
 TestResults.xml
 config.py
 .venv
+/backend/.env
+/.idea/.gitignore
+/.idea/Gakondotour.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
