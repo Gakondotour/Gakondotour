@@ -12,6 +12,8 @@ Built with modern technologies and elegant design principles, Gakondotour ensure
 - pip install flask-session
 - pip install flask-jwt-extended
 - pip install flask-login
+- pip install Config
+- pip install gunicorn
     
 - npm install axios
 - npm install react-router-dom

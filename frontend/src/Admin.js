@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 function Admin() {
   const [users, setUsers] = useState([]);
   const [username, setUsername] = useState('');
@@ -8,14 +8,14 @@ function Admin() {
 
   useEffect(() => {
     // Fetch users from backend
-    axios.get('http://127.0.0.1:5000/admin')
+    axios.get(API_URL+'/admin')
       .then(response => setUsers(response.data))
       .catch(error => console.error(error));
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://127.0.0.1:5000/admin', { username, password })
+    axios.post(API_URL+'/admin', { username, password })
       .then(response => {
         setUsers([...users, { username, password }]);
         setUsername('');
