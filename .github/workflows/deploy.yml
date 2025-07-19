@@ -20,6 +20,8 @@ jobs:
         username: ${{ secrets.GAKONDOTOUR_AUTODEPLOY_USER }}
         key: ${{ secrets.GAKONDOTOUR_AUTODEPLOY }}
         script: |
+          export NVM_DIR="$HOME/.nvm"
+          export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/snap/bin"
           cd /var/www/Gakondotour
           git reset --hard
           git pull
