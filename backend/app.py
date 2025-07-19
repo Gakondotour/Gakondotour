@@ -36,6 +36,14 @@ login_manager.init_app(app)
 
 db.init_app(app)
 
+# reCAPTCHA verification
+def verify_recaptcha(token):
+    response = requests.post(
+        "https://www.google.com/recaptcha/api/siteverify",
+        data={"secret": RECAPTCHA_SECRET, "response": token}
+    )
+    return response.json()
+
 
 # Create all tables in the database
 with app.app_context():
@@ -103,8 +111,8 @@ def home():
             phone=data['phone'],
             email=data['email']
         )
-        db.session.add(new_booking)
-        db.session.commit()
+        # db.session.add(new_booking)
+        
         return {"message": "Booking created successfully"}, 201
 
 
@@ -123,10 +131,10 @@ def confirmation_booking():
             phone = data['phone'],
             email = data['email']
         )
-    db.session.add(new_booking)
-    db.session.commit()
-    # session.pop(data) # To clear session after confirmation
-    return {"message": "Booking confirmed"}, 201
+        db.session.add(new_booking)
+        db.session.commit()
+        # session.pop(data) # To clear session after confirmation
+        return {"message": "Booking confirmed"}, 201
 
  # Initialize DB
 @app.before_request
