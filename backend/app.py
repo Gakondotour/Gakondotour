@@ -1,44 +1,313 @@
-from flask import Flask, request, redirect, url_for, session
+# from flask import Flask, request, redirect, url_for, session
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_cors import CORS
+# from models import db, User, Booking, Contact
+# from config import Config
+# from flask import Blueprint
+# from datetime import datetime, timedelta
+# import flask_login
+# from flask_bcrypt import Bcrypt
+# from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+# from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+# from werkzeug.security import generate_password_hash, check_password_hash
+# from flask_session import Session
+
+
+# app = Flask(__name__)
+# CORS(app, supports_credentials=True)
+# app.config.from_object(Config)
+# app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server
+# app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+# jwt = JWTManager(app)
+# bcrypt = Bcrypt(app)
+
+
+# Session(app)
+
+
+# login_manager = flask_login.LoginManager()
+# login_manager.init_app(app)
+
+
+# db.init_app(app)
+
+
+# # Create all tables in the database
+# with app.app_context():
+#     # db.drop_all() # to clean the cache
+#     db.create_all()
+
+
+# @app.route('/', methods=["GET", "POST"])
+# def home():
+#     if request.method == "GET":
+#         bookings = Booking.query.all()
+#         booking_list = [{
+#             'id': book.id,
+#             'name': book.name,
+#             'number_of_people': book.number_of_people,
+#             'activity': book.activity,
+#             'date_time': book.date_time.strftime('%Y-%m-%d'),
+#             'phone': book.phone,
+#             'email': book.email
+#         } for book in bookings]
+
+#         # Collect booked dates per activity
+#         booked_dates = {}
+#         for book in bookings:
+#             date_str = book.date_time.strftime('%Y-%m-%d')
+#             if date_str not in booked_dates:
+#                 booked_dates[date_str] = []
+#             booked_dates[date_str]
+#         return {
+#             "bookings": booking_list,
+#             "booked_dates": booked_dates
+#         }
+
+#     if request.method == "POST":
+#         data = request.get_json()
+
+#         # Prevent booking for past dates
+#         booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
+#         today = datetime.now().date()
+#         if booking_date < today:
+#             return {"message": "Cannot book a past date"}, 400
+
+#         # Check if the date is already booked
+#         existing_booking = Booking.query.filter_by(
+#             date_time=booking_date, 
+#         ).first()
+#         if existing_booking:
+#             return {"message": "The selected date is already booked. Please choose a different date."}, 409
+
+#         # Add new booking
+#         new_booking = Booking(
+#             name=data['name'], 
+#             number_of_people=data['number_of_people'],
+#             activity=data['activity'],
+#             date_time=booking_date,
+#             phone=data['phone'],
+#             email=data['email']
+#         )
+#         return {"message": "Booking created successfully"}, 201
+
+
+
+# @app.route('/confirmation_booking', methods=['POST'])
+# def confirmation_booking():
+
+#     if request.method == "POST":
+#         data = request.get_json()
+            
+#         new_booking= Booking(
+#             name = data['name'], 
+#             number_of_people = data['number_of_people'],
+#             activity=data['activity'],
+#             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
+#             phone = data['phone'],
+#             email = data['email']
+#         )
+#     db.session.add(new_booking)
+#     db.session.commit()
+#     # session.pop(data) # To clear session after confirmation
+#     return {"message": "Booking confirmed"}, 201
+
+#  # Initialize DB
+# @app.before_request
+# def create_tables():
+#     db.create_all()
+
+
+# # User Registration (Admin Only)
+# @app.route('/register', methods=['POST'])
+# @jwt_required()
+# def register():
+#     current_user = get_jwt_identity()
+#     user = User.query.filter_by(username=current_user).first()
+#     if user.is_admin != 'admin':
+#         return {"message": "Only admin can register users"}, 403
+
+#     data = request.json
+#     admin_password = generate_password_hash(data['password'])
+#     new_user = User(username=data['username'], password=admin_password, is_admin=data['is_admin'])
+#     db.session.add(new_user)
+#     db.session.commit()
+#     return {"message": "User registered successfully"}, 201
+
+
+# # Login
+# @app.route('/login', methods=['POST'])
+# def login():
+#     data = request.json
+#     user = User.query.filter_by(username=data['username']).first()
+#     if not user or not check_password_hash(user.password, data['password']):
+#         return {"message": "Invalid credentials"}, 401
+#     token = create_access_token(identity=user.username)
+#     return {"token": token, "is_admin": user.is_admin}, 200
+
+# # Admin/Manager Dashboard
+# @app.route('/dashboard', methods=['GET', 'POST', 'DELETE'])
+# @jwt_required()
+# def manage_data():
+#     current_user = get_jwt_identity()
+#     user = User.query.filter_by(username=current_user).first()
+
+#     # Check user administration
+#     if user.is_admin not in ['admin', 'manager']:
+#         return {"message": "Access denied"}, 403
+
+#     if request.method == 'GET':
+#         bookings = Booking.query.all()
+#         booking_list = [{
+#                 'id':book.id,
+#                 'name': book.name,
+#                 'number_of_people': book.number_of_people,
+#                 'activity': book.activity,
+#                 'date_time': book.date_time.strftime('%Y-%m-%d'),
+#                 'phone': book.phone,
+#                 'email': book.email
+#             } for book in bookings]
+#         return {'booking_list': booking_list}, 200
+
+#     if request.method == 'POST':
+#         data = request.json
+#         new_booking= Booking(
+#             name = data['name'], 
+#             number_of_people = data['number_of_people'],
+#             activity=data['activity'],
+#             date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
+#             phone = data['phone'],
+#             email = data['email']
+#         )
+#         db.session.add(new_booking)
+#         db.session.commit()
+#         return {"message": "Data added successfully"}, 201
+
+#     if request.method == 'DELETE':
+#        current_user = get_jwt_identity()
+#     user = User.query.filter_by(username=current_user).first()
+
+#     # Ensure user is admin/manager
+#     if user.is_admin not in ['admin', 'manager']:
+#         return {"message": "Access denied"}, 403
+
+#     data = request.get_json()
+#     booking_to_delete = Booking.query.get(data['id'])
+#     if booking_to_delete:
+#         db.session.delete(booking_to_delete)
+#         db.session.commit()
+#         return {"message": "Booking deleted successfully"}, 200
+#     return {"message": "Booking not found"}, 404
+
+
+# @app.route("/contact", methods=['GET', 'POST'])
+# def contact():
+#     if request.method == 'GET':
+#         contacts = Contact.query.all()
+#         contact_list = [{
+#             'id': contact.id,
+#             'name': contact.name,
+#             'email': contact.email,
+#             'text': contact.text
+#         } for contact in contacts]
+#         return{'contact_list': contact_list}
+
+#     if request.method == 'POST':
+#         data = request.get_json()
+#         new_contact = Contact(
+#             name = data['name'],
+#             email = data['email'],
+#             text = data['text']
+#         )
+#         db.session.add(new_contact)
+#         db.session.commit()
+#         return {"message": "Data added successfully"}, 201
+
+
+# # Admin/Manager Contact
+# @app.route('/contact_admin', methods=['GET', 'POST', 'DELETE'])
+# @jwt_required()
+# def manage_text():
+#     current_user = get_jwt_identity()
+#     user = User.query.filter_by(username=current_user).first()
+#     if user.is_admin not in ['admin', 'manager']:
+#         return {"message": "Access denied"}, 403
+
+#     if request.method == 'GET':
+#         contacts = Contact.query.all()
+#         contact_list = [{
+#             'id': contact.id,
+#             'name': contact.name,
+#             'email': contact.email,
+#             'text': contact.text
+#             } for contact in contacts]
+#         return {'contact_list': contact_list}, 200
+
+#     if request.method == 'POST':
+#         data = request.json
+#         new_contact = Contact(
+#             name=data['name'],
+#             email=data['email'],
+#             text=data['text']
+#         )
+#         db.session.add(new_contact)
+#         db.session.commit()
+#         return {"message": "Data added successfully"}, 201
+
+#     if request.method == 'DELETE':
+#         data = request.get_json()
+#         contact_to_delete = Contact.query.get(data['id'])
+#         if contact_to_delete:
+#             db.session.delete(contact_to_delete)
+#             db.session.commit()
+#             return {"message": "Contact deleted successfully"}, 200
+#         return {"message": "Contact not found"}, 404
+
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+
+
+
+
+
+import os
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db, User, Booking, Contact
 from config import Config
-from flask import Blueprint
 from datetime import datetime, timedelta
 import flask_login
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_session import Session
 
-
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.config.from_object(Config)
-app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-jwt = JWTManager(app)
-bcrypt = Bcrypt(app)
 
+db_path = os.path.join(app.instance_path, 'sqlite.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+app.config['JWT_SECRET_KEY'] = 'your_secret_key'  # Replace in production
 
 Session(app)
-
-
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-
-
 db.init_app(app)
 
-
-# Create all tables in the database
-with app.app_context():
-    # db.drop_all() # to clean the cache
+# Ensure tables are created
+@app.before_request
+def create_tables():
     db.create_all()
 
-
-@app.route('/', methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "GET":
         bookings = Booking.query.all()
@@ -51,74 +320,59 @@ def home():
             'phone': book.phone,
             'email': book.email
         } for book in bookings]
-
-        # Collect booked dates per activity
-        booked_dates = {}
-        for book in bookings:
-            date_str = book.date_time.strftime('%Y-%m-%d')
-            if date_str not in booked_dates:
-                booked_dates[date_str] = []
-            booked_dates[date_str]
-        return {
-            "bookings": booking_list,
-            "booked_dates": booked_dates
-        }
+        return {"bookings": booking_list}
 
     if request.method == "POST":
         data = request.get_json()
+        required_fields = ['name', 'number_of_people', 'activity', 'date_time', 'phone', 'email']
+        for field in required_fields:
+            if field not in data:
+                return {"error": f"Missing field: {field}"}, 400
 
-        # Prevent booking for past dates
-        booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
-        today = datetime.now().date()
-        if booking_date < today:
-            return {"message": "Cannot book a past date"}, 400
+        try:
+            booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
+        except ValueError:
+            return {"error": "Invalid date format. Use YYYY-MM-DD."}, 400
 
-        # Check if the date is already booked
-        existing_booking = Booking.query.filter_by(
-            date_time=booking_date, 
-        ).first()
-        if existing_booking:
-            return {"message": "The selected date is already booked. Please choose a different date."}, 409
+        if booking_date < datetime.now().date():
+            return {"error": "Cannot book a past date."}, 400
 
-        # Add new booking
+        return {"message": "Booking data is valid"}, 200
+
+
+@app.route('/confirmation_booking', methods=['POST'])
+def confirmation_booking():
+    try:
+        data = request.get_json()
+        required_fields = ['name', 'number_of_people', 'activity', 'date_time', 'phone', 'email']
+        for field in required_fields:
+            if field not in data:
+                return {"error": f"Missing field: {field}"}, 400
+
+        booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d')
+
+        # Check for existing booking
+        existing = Booking.query.filter_by(email=data['email'], date_time=booking_date).first()
+        if existing:
+            return {"error": "Booking already exists for this email and date."}, 409
+
         new_booking = Booking(
-            name=data['name'], 
+            name=data['name'],
             number_of_people=data['number_of_people'],
             activity=data['activity'],
             date_time=booking_date,
             phone=data['phone'],
             email=data['email']
         )
-        return {"message": "Booking created successfully"}, 201
+        db.session.add(new_booking)
+        db.session.commit()
+        return {"message": "Booking confirmed"}, 201
+
+    except Exception as e:
+        print("Error confirming booking:", str(e))
+        return {"error": "Failed to confirm booking", "details": str(e)}, 500
 
 
-
-@app.route('/confirmation_booking', methods=['POST'])
-def confirmation_booking():
-
-    if request.method == "POST":
-        data = request.get_json()
-            
-        new_booking= Booking(
-            name = data['name'], 
-            number_of_people = data['number_of_people'],
-            activity=data['activity'],
-            date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
-            phone = data['phone'],
-            email = data['email']
-        )
-    db.session.add(new_booking)
-    db.session.commit()
-    # session.pop(data) # To clear session after confirmation
-    return {"message": "Booking confirmed"}, 201
-
- # Initialize DB
-@app.before_request
-def create_tables():
-    db.create_all()
-
-
-# User Registration (Admin Only)
 @app.route('/register', methods=['POST'])
 @jwt_required()
 def register():
@@ -128,103 +382,89 @@ def register():
         return {"message": "Only admin can register users"}, 403
 
     data = request.json
-    admin_password = generate_password_hash(data['password'])
-    new_user = User(username=data['username'], password=admin_password, is_admin=data['is_admin'])
+    hashed_pw = generate_password_hash(data['password'])
+    new_user = User(username=data['username'], password=hashed_pw, is_admin=data['is_admin'])
     db.session.add(new_user)
     db.session.commit()
     return {"message": "User registered successfully"}, 201
 
 
-# Login
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
     user = User.query.filter_by(username=data['username']).first()
     if not user or not check_password_hash(user.password, data['password']):
         return {"message": "Invalid credentials"}, 401
+
     token = create_access_token(identity=user.username)
     return {"token": token, "is_admin": user.is_admin}, 200
 
-# Admin/Manager Dashboard
+
 @app.route('/dashboard', methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
 def manage_data():
     current_user = get_jwt_identity()
     user = User.query.filter_by(username=current_user).first()
 
-    # Check user administration
     if user.is_admin not in ['admin', 'manager']:
         return {"message": "Access denied"}, 403
 
     if request.method == 'GET':
         bookings = Booking.query.all()
         booking_list = [{
-                'id':book.id,
-                'name': book.name,
-                'number_of_people': book.number_of_people,
-                'activity': book.activity,
-                'date_time': book.date_time.strftime('%Y-%m-%d'),
-                'phone': book.phone,
-                'email': book.email
-            } for book in bookings]
+            'id': b.id,
+            'name': b.name,
+            'number_of_people': b.number_of_people,
+            'activity': b.activity,
+            'date_time': b.date_time.strftime('%Y-%m-%d'),
+            'phone': b.phone,
+            'email': b.email
+        } for b in bookings]
         return {'booking_list': booking_list}, 200
 
     if request.method == 'POST':
         data = request.json
-        new_booking= Booking(
-            name = data['name'], 
-            number_of_people = data['number_of_people'],
+        booking = Booking(
+            name=data['name'],
+            number_of_people=data['number_of_people'],
             activity=data['activity'],
-            date_time =datetime.strptime(data['date_time'], '%Y-%m-%d'),
-            phone = data['phone'],
-            email = data['email']
+            date_time=datetime.strptime(data['date_time'], '%Y-%m-%d'),
+            phone=data['phone'],
+            email=data['email']
         )
-        db.session.add(new_booking)
+        db.session.add(booking)
         db.session.commit()
         return {"message": "Data added successfully"}, 201
 
     if request.method == 'DELETE':
-       current_user = get_jwt_identity()
-    user = User.query.filter_by(username=current_user).first()
-
-    # Ensure user is admin/manager
-    if user.is_admin not in ['admin', 'manager']:
-        return {"message": "Access denied"}, 403
-
-    data = request.get_json()
-    booking_to_delete = Booking.query.get(data['id'])
-    if booking_to_delete:
-        db.session.delete(booking_to_delete)
-        db.session.commit()
-        return {"message": "Booking deleted successfully"}, 200
-    return {"message": "Booking not found"}, 404
+        data = request.get_json()
+        booking = Booking.query.get(data['id'])
+        if booking:
+            db.session.delete(booking)
+            db.session.commit()
+            return {"message": "Booking deleted successfully"}, 200
+        return {"message": "Booking not found"}, 404
 
 
-@app.route("/contact", methods=['GET', 'POST'])
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'GET':
         contacts = Contact.query.all()
-        contact_list = [{
-            'id': contact.id,
-            'name': contact.name,
-            'email': contact.email,
-            'text': contact.text
-        } for contact in contacts]
-        return{'contact_list': contact_list}
+        return {'contact_list': [{
+            'id': c.id,
+            'name': c.name,
+            'email': c.email,
+            'text': c.text
+        } for c in contacts]}
 
     if request.method == 'POST':
         data = request.get_json()
-        new_contact = Contact(
-            name = data['name'],
-            email = data['email'],
-            text = data['text']
-        )
-        db.session.add(new_contact)
+        contact = Contact(name=data['name'], email=data['email'], text=data['text'])
+        db.session.add(contact)
         db.session.commit()
-        return {"message": "Data added successfully"}, 201
+        return {"message": "Contact submitted successfully"}, 201
 
 
-# Admin/Manager Contact
 @app.route('/contact_admin', methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
 def manage_text():
@@ -235,30 +475,25 @@ def manage_text():
 
     if request.method == 'GET':
         contacts = Contact.query.all()
-        contact_list = [{
-            'id': contact.id,
-            'name': contact.name,
-            'email': contact.email,
-            'text': contact.text
-            } for contact in contacts]
-        return {'contact_list': contact_list}, 200
+        return {'contact_list': [{
+            'id': c.id,
+            'name': c.name,
+            'email': c.email,
+            'text': c.text
+        } for c in contacts]}, 200
 
     if request.method == 'POST':
         data = request.json
-        new_contact = Contact(
-            name=data['name'],
-            email=data['email'],
-            text=data['text']
-        )
-        db.session.add(new_contact)
+        contact = Contact(name=data['name'], email=data['email'], text=data['text'])
+        db.session.add(contact)
         db.session.commit()
-        return {"message": "Data added successfully"}, 201
+        return {"message": "Contact added"}, 201
 
     if request.method == 'DELETE':
         data = request.get_json()
-        contact_to_delete = Contact.query.get(data['id'])
-        if contact_to_delete:
-            db.session.delete(contact_to_delete)
+        contact = Contact.query.get(data['id'])
+        if contact:
+            db.session.delete(contact)
             db.session.commit()
             return {"message": "Contact deleted successfully"}, 200
         return {"message": "Contact not found"}, 404
