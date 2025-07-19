@@ -103,6 +103,8 @@ def home():
             phone=data['phone'],
             email=data['email']
         )
+        db.session.add(new_booking)
+        db.session.commit()
         return {"message": "Booking created successfully"}, 201
 
 
