@@ -429,7 +429,6 @@ const Book = () => {
             onChange={handleRecaptchaChange} />
         </div>
 
-
       </form>
     </>
   );
