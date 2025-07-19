@@ -195,7 +195,7 @@ const Book = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bookingForm" method="POST">
+      <form onSubmit={handleSubmit} className="bookingForm">
         <div className="row">
           <div className="col-md-6">
             <MDBInput

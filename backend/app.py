@@ -36,14 +36,6 @@ login_manager.init_app(app)
 
 db.init_app(app)
 
-# reCAPTCHA verification
-def verify_recaptcha(token):
-    response = requests.post(
-        "https://www.google.com/recaptcha/api/siteverify",
-        data={"secret": RECAPTCHA_SECRET, "response": token}
-    )
-    return response.json()
-
 
 # Create all tables in the database
 with app.app_context():
@@ -79,15 +71,6 @@ def home():
 
     if request.method == "POST":
         data = request.get_json()
-
-        # recaptcha_token = data.get("recaptcha_token")
-        # if not recaptcha_token:
-        #     return {"message": "Missing reCAPTCHA token"}, 400
-
-        # # Verify reCAPTCHA with Google
-        # recaptcha_response = verify_recaptcha(recaptcha_token)
-        # if not recaptcha_response["success"]:
-        #     return {"message": "Failed reCAPTCHA verification"}, 403
 
         # Prevent booking for past dates
         booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
