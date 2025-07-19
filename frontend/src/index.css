@@ -251,6 +251,18 @@ option{
   color:#9d9d9d !important;
 }
 
+#developer {
+  color: #BFD8AF; /* Light greenish-gray */
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#developer:hover {
+  color: #DFF6C5; /* Brighter on hover */
+  text-decoration: underline;
+}
+
 /* Login page _________________________________ */
 .login-form {
   margin: 5vh auto;

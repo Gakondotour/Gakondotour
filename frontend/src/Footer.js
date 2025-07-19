@@ -102,15 +102,16 @@ const Footer = () => {
 
       <div
         className="text-center p-4"
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#ffffff" }}
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#b5afafff" }}
       >
         © 2025 Copyright:{" "}
         <a
           className="text-reset fw-bold link-hover"
+          id="developer"
           href="https://www.linkedin.com/in/ahmed-alamassi-4655b9252/"
           target="_blank"
         >
-          Ahmed (Christian) Alamassi
+          A. C. Alamassi
         </a>
       </div>
     </MDBFooter>

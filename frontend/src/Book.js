@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MDBInput, MDBBtn } from "mdb-react-ui-kit";
 import DatePicker from "react-datepicker";
+import ReCAPTCHA from "react-google-recaptcha";
 import "react-datepicker/dist/react-datepicker.css";
 
 const Book = () => {
@@ -24,7 +25,7 @@ const Book = () => {
   const [price, setPrice] = useState(null); // To track and display the calculated price
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
-
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const activityPrices = {
     CONGO_NILE_TRAIL: 50,
@@ -77,14 +78,24 @@ const Book = () => {
   }, [price]);
 
 
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormSubmitted(true);
 
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA verification.");
+      return;
+    }
+
+
     if (formData.activity.length === 0) {
       return; // Stop submission if no activity is selected
     }
-    
+
     // If booking per hour, send multiple requests (one per selected activity)
     if (
       formData.bookingType === "perHour" &&
@@ -111,7 +122,7 @@ const Book = () => {
         );
         setError(
           error.response?.data?.message ||
-            "Failed to create booking. Please try again."
+          "Failed to create booking. Please try again."
         );
       }
     } else {
@@ -135,7 +146,7 @@ const Book = () => {
         );
         setError(
           error.response?.data?.message ||
-            "Failed to create booking. Please try again."
+          "Failed to create booking. Please try again."
         );
       }
     }
@@ -180,11 +191,11 @@ const Book = () => {
       setPrice(null);
     }
   }, [formData.activity, formData.number_of_people]);
-  
+
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bookingForm">
+      <form onSubmit={handleSubmit} className="bookingForm" method="POST">
         <div className="row">
           <div className="col-md-6">
             <MDBInput
@@ -259,64 +270,64 @@ const Book = () => {
             </div>
           )}
 
-{formData.bookingType === "perHour" && (
-  <div className="col-md-6">
-    <div className="dropdown">
-      <button
-        className="selection"
-        type="button"
-        onClick={() => setDropdownOpen(!dropdownOpen)} // Toggle dropdown
-      >
-        Select activities per hour
-      </button>
+          {formData.bookingType === "perHour" && (
+            <div className="col-md-6">
+              <div className="dropdown">
+                <button
+                  className="selection"
+                  type="button"
+                  onClick={() => setDropdownOpen(!dropdownOpen)} // Toggle dropdown
+                >
+                  Select activities per hour
+                </button>
 
-      {dropdownOpen && ( // Conditionally show dropdown content
-        <ul className="dropdown-menu show custom-dropdown" style={{ display: "block" }}>
-          {Object.keys(activityPricesH).map((activity) => {
-            const hours =
-              {
-                RUBONA_HIKING: 2,
-                GISENYI_CITY_TOUR: 1,
-                RURAL_AREA_TOUR: 3,
-                CULTURE_TOURS: 2,
-                BANANA_BEER: 2,
-              }[activity] || 1; // Default to 1 hour if not listed
+                {dropdownOpen && ( // Conditionally show dropdown content
+                  <ul className="dropdown-menu show custom-dropdown" style={{ display: "block" }}>
+                    {Object.keys(activityPricesH).map((activity) => {
+                      const hours =
+                        {
+                          RUBONA_HIKING: 2,
+                          GISENYI_CITY_TOUR: 1,
+                          RURAL_AREA_TOUR: 3,
+                          CULTURE_TOURS: 2,
+                          BANANA_BEER: 2,
+                        }[activity] || 1; // Default to 1 hour if not listed
 
-            return (
-              <li key={activity} className="dropdown-item">
-                <input
-                  type="checkbox"
-                  value={activity}
-                  checked={formData.activity.includes(activity)}
-                  onChange={(e) => {
-                    const selectedActivities = [...formData.activity];
-                    if (e.target.checked) {
-                      selectedActivities.push(activity);
-                    } else {
-                      const index = selectedActivities.indexOf(activity);
-                      if (index > -1) {
-                        selectedActivities.splice(index, 1);
-                      }
-                    }
-                    setFormData({
-                      ...formData,
-                      activity: selectedActivities,
-                    });
-                  }}
-                />{" "}
-                {activity.replace(/_/g, " ")} {hours}/h
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
-    {/* Display validation message if no activity is selected */}
-    {formSubmitted && formData.activity.length === 0 && (
-      <p className="text-danger">Please select at least one activity.</p>
-    )}
-  </div>
-)}
+                      return (
+                        <li key={activity} className="dropdown-item">
+                          <input
+                            type="checkbox"
+                            value={activity}
+                            checked={formData.activity.includes(activity)}
+                            onChange={(e) => {
+                              const selectedActivities = [...formData.activity];
+                              if (e.target.checked) {
+                                selectedActivities.push(activity);
+                              } else {
+                                const index = selectedActivities.indexOf(activity);
+                                if (index > -1) {
+                                  selectedActivities.splice(index, 1);
+                                }
+                              }
+                              setFormData({
+                                ...formData,
+                                activity: selectedActivities,
+                              });
+                            }}
+                          />{" "}
+                          {activity.replace(/_/g, " ")} {hours}/h
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              {/* Display validation message if no activity is selected */}
+              {formSubmitted && formData.activity.length === 0 && (
+                <p className="text-danger">Please select at least one activity.</p>
+              )}
+            </div>
+          )}
 
           <div className="col-md-6">
             <DatePicker
@@ -380,6 +391,7 @@ const Book = () => {
 
         {error && <p className="error-message">{error}</p>}
 
+
         <MDBBtn
           className="me-1"
           style={{ color: "#fff", backgroundColor: "#9BBF6A" }}
@@ -405,6 +417,19 @@ const Book = () => {
         >
           Reset
         </MDBBtn>
+
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "30px",
+          marginBottom: "20px"
+        }}>
+          <ReCAPTCHA
+            sitekey="6LcWmYgrAAAAAA0NHlBbvNqOge93cNRi3L2OIpIh"
+            onChange={handleRecaptchaChange} />
+        </div>
+
+
       </form>
     </>
   );

@@ -14,17 +14,20 @@ Built with modern technologies and elegant design principles, Gakondotour ensure
 - pip install flask-login
 - pip install Config
 - pip install gunicorn
+- pip install requests
+
     
 - npm install axios
 - npm install react-router-dom
 - npm install react-datepicker--legacy-peer-deps
-- npm i react-custom-alert--legacy-peer-deps
+- npm install react-custom-alert--legacy-peer-deps
 - npm install emailjs-com--legacy-peer-deps
+- npm install react-google-recaptcha
 
 - Run
     - npm install --legacy-peer-deps to resolve dependency conflicts.
 
-    - mInstall web-vitals to using npm install web-vitals.
+    - npm Install web-vitals to using npm install web-vitals.
 
 ## 🚀 Tech Stack
 - Flask : Backend framework for API development & routing
