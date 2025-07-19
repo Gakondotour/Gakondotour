@@ -80,14 +80,14 @@ def home():
     if request.method == "POST":
         data = request.get_json()
 
-        recaptcha_token = data.get("recaptcha_token")
-        if not recaptcha_token:
-            return jsonify({"message": "Missing reCAPTCHA token"}), 400
+        # recaptcha_token = data.get("recaptcha_token")
+        # if not recaptcha_token:
+        #     return {"message": "Missing reCAPTCHA token"}, 400
 
-        # Verify reCAPTCHA with Google
-        recaptcha_response = verify_recaptcha(recaptcha_token)
-        if not recaptcha_response["success"]:
-            return jsonify({"message": "Failed reCAPTCHA verification"}), 403
+        # # Verify reCAPTCHA with Google
+        # recaptcha_response = verify_recaptcha(recaptcha_token)
+        # if not recaptcha_response["success"]:
+        #     return {"message": "Failed reCAPTCHA verification"}, 403
 
         # Prevent booking for past dates
         booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
