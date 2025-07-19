@@ -2,6 +2,10 @@
 Welcome to Gakondotour — a dynamic, user-friendly tourist website designed to offer travelers an immersive experience exploring destinations, booking tours, and discovering the beauty of nature and culture.
 Built with modern technologies and elegant design principles, Gakondotour ensures seamless interaction and an engaging UI to enhance your journey, from curiosity to booking!
 
+## Server Documentation
+
+- Project path: `/var/www/Gakondotour`
+
 ## Installation
 - pip install Flask
 - pip install Flask-SQLAlchemy
