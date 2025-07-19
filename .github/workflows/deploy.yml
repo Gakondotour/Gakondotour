@@ -1,0 +1,28 @@
+name: 🚀 Auto Deploy
+
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: gakondotour.com
+        username: ${{ secrets.GAKONDOTOUR_AUTODEPLOY_USER }}
+        key: ${{ secrets.GAKONDOTOUR_AUTODEPLOY }}
+        script: |
+          cd /var/www/Gakondotour
+          git reset --hard
+          git pull
+          cd /var/www/Gakondotour/frontend
+          npm install
+          npm run build
