@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -17,15 +15,12 @@ from flask_session import Session
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-
-db_path = os.path.join(app.instance_path, 'sqlite.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config.from_object(Config)
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
-# Load this securely in production
-RECAPTCHA_SECRET = os.getenv("6LcWmYgrAAAAANWzuM0-TOrxJV80Tg590lN_a8M6", "6LcWmYgrAAAAAA0NHlBbvNqOge93cNRi3L2OIpIh")
+
 
 Session(app)
 
@@ -72,15 +67,6 @@ def home():
     if request.method == "POST":
         data = request.get_json()
 
-        recaptcha_token = data.get("recaptcha_token")
-        if not recaptcha_token:
-            return jsonify({"message": "Missing reCAPTCHA token"}), 400
-
-        # Verify reCAPTCHA with Google
-        recaptcha_response = verify_recaptcha(recaptcha_token)
-        if not recaptcha_response["success"]:
-            return jsonify({"message": "Failed reCAPTCHA verification"}), 403
-
         # Prevent booking for past dates
         booking_date = datetime.strptime(data['date_time'], '%Y-%m-%d').date()
         today = datetime.now().date()
@@ -103,8 +89,6 @@ def home():
             phone=data['phone'],
             email=data['email']
         )
-        db.session.add(new_booking)
-        db.session.commit()
         return {"message": "Booking created successfully"}, 201
 
 

@@ -87,10 +87,9 @@ const Book = () => {
     setFormSubmitted(true);
 
     if (!recaptchaToken) {
-      setError("Please complete the reCAPTCHA verification.");
+      setError("Please complete the verification.");
       return;
     }
-
 
     if (formData.activity.length === 0) {
       return; // Stop submission if no activity is selected
