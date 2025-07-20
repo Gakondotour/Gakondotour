@@ -25,6 +25,7 @@ jobs:
           cd /var/www/Gakondotour
           git reset --hard
           git pull
+          systemctl restart backend
           cd /var/www/Gakondotour/frontend
           npm install
           npm run build
