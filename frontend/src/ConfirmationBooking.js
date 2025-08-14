@@ -25,7 +25,7 @@ const ConfirmationBooking = () => {
           email: booking.email,
           price: price,
       };
-      const response = await axios.post('sendmail', templateParams)
+      const response = await axios.post(API_URL+'/sendmail', templateParams)
       if (response.status >= 400) {
           console.error(response.data)
           return;
