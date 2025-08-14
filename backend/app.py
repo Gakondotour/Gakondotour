@@ -275,6 +275,7 @@ def manage_text():
             return {"message": "Contact deleted successfully"}, 200
         return {"message": "Contact not found"}, 404
 
+EMAIL_DEFAULT = os.environ.get('EMAIL_DEFAULT')
 # Load sensitive variables from environment
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
@@ -362,11 +363,17 @@ def oauth2callback():
 
 @app.route('/sendmail', methods=['POST'])
 def sendMail():
-    # Find first user with an access_token
-    user = User.query.filter(User.access_token.isnot(None)).first()
+    # First check if specific user exists with an access_token
+    user = User.query.filter_by(email=EMAIL_DEFAULT) \
+                     .filter(User.access_token.isnot(None)) \
+                     .first()
+
+    # If not found, fallback to first user with an access_token
+    if not user:
+        user = User.query.filter(User.access_token.isnot(None)).first()
+
     if not user:
         return {"error": "No user with valid Google credentials found"}, 400
-
     # Recreate credentials object
     creds = Credentials(
         token=user.access_token,
