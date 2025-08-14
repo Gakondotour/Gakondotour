@@ -364,7 +364,7 @@ def oauth2callback():
 @app.route('/sendmail', methods=['POST'])
 def sendMail():
     # First check if specific user exists with an access_token
-    user = User.query.filter_by(email=EMAIL_DEFAULT) \
+    user = User.query.filter_by(username=EMAIL_DEFAULT) \
                      .filter(User.access_token.isnot(None)) \
                      .first()
 
