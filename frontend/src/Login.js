@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-custom-alert';
 import 'react-custom-alert/dist/index.css';
 import Nav from "./Nav";
 import Footer from "./Footer";
-
+const REACT_APP_BACKEND_URL=process.env.REACT_APP_BACKEND_URL
 const Login = () => {
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
@@ -14,7 +14,7 @@ const Login = () => {
 
   const login = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/login", {
+      const response = await axios.post(REACT_APP_BACKEND_URL+"/login", {
         username,
         password,
       });
@@ -34,7 +34,7 @@ const Login = () => {
 
   const loginWithGoogle = () => {
     // Redirect to backend Google OAuth endpoint
-    window.location.href = "http://localhost:5000/authorize";
+    window.location.href = REACT_APP_BACKEND_URL+"/authorize";
   };
 
   return (
