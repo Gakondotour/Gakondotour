@@ -19,7 +19,21 @@ const ConfirmationBooking = () => {
   const booking = location.state?.booking || {};
   const price = location.state?.price || 0;
 
-  const sendEmail = async () => {
+  const sendEmail = async function () {
+      const templateParams = {
+          name: booking.name,
+          email: booking.email,
+          price: price,
+      };
+      const response = await axios.post('sendmail', templateParams)
+      if (response.status >= 400) {
+          console.error(response.data)
+          return;
+      }
+      console.log('Mail sent.')
+  }
+
+  const sendEmailViaEmailJs = async () => {
     if (!booking || !booking.email) {
       toast.error("Invalid booking details. Cannot send email.");
       return;

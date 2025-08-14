@@ -13,7 +13,12 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_session import Session
-
+from google_auth_oauthlib.flow import Flow
+import requests
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from email.mime.text import MIMEText
+import base64
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -23,6 +28,8 @@ app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
+app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY')
+
 
 
 Session(app)
@@ -40,6 +47,8 @@ with app.app_context():
     # db.drop_all() # to clean the cache
     db.create_all()
 
+if os.environ.get("FLASK_ENV") == "development":
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 @app.route('/', methods=["GET", "POST"])
 def home():
@@ -265,6 +274,146 @@ def manage_text():
             db.session.commit()
             return {"message": "Contact deleted successfully"}, 200
         return {"message": "Contact not found"}, 404
+
+# Load sensitive variables from environment
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+GOOGLE_AUTH_REDIRECT_URL = os.environ.get('GOOGLE_AUTH_REDIRECT_URL')
+SCOPES = ['openid','https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/userinfo.email']
+
+@app.route('/authorize')
+def authorize():
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "redirect_uris": [GOOGLE_AUTH_REDIRECT_URL],
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token"
+            }
+        },
+        scopes=SCOPES
+    )
+    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    auth_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='consent'
+    )
+    session['state'] = state
+    return redirect(auth_url)
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    state = session.get('state')
+    if not state:
+        return {"error": "Missing OAuth state"}, 400
+
+    # Exchange code for tokens
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "redirect_uris": [GOOGLE_AUTH_REDIRECT_URL],
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token"
+            }
+        },
+        scopes=SCOPES,
+        state=state
+    )
+    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    flow.fetch_token(authorization_response=request.url)
+
+    credentials = flow.credentials
+
+    # Get Google user info
+    user_info_response = requests.get(
+        "https://www.googleapis.com/oauth2/v2/userinfo",
+        headers={"Authorization": f"Bearer {credentials.token}"}
+    )
+    user_info = user_info_response.json()
+    email = user_info.get("email")
+    name = user_info.get("name", email.split("@")[0])
+
+    if not email:
+        return {"error": "Could not retrieve email from Google"}, 400
+
+    # Find or create user
+    user = User.query.filter_by(username=email).first()
+    if not user:
+        user = User(username=email, password=generate_password_hash(os.urandom(16).hex()), is_admin="user")
+        db.session.add(user)
+        db.session.commit()
+
+    # Save Google tokens in DB
+    user.access_token = credentials.token
+    user.refresh_token = credentials.refresh_token
+    user.token_expiry = credentials.expiry
+    db.session.commit()
+
+    # Create JWT token
+    token = create_access_token(identity=user.username)
+
+    # Return token to frontend
+    return {"token": token, "is_admin": user.is_admin}, 200
+
+@app.route('/sendmail', methods=['POST'])
+def sendMail():
+    # Find first user with an access_token
+    user = User.query.filter(User.access_token.isnot(None)).first()
+    if not user:
+        return {"error": "No user with valid Google credentials found"}, 400
+
+    # Recreate credentials object
+    creds = Credentials(
+        token=user.access_token,
+        refresh_token=user.refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        scopes=SCOPES
+    )
+
+    # If token expired, refresh it
+    if creds.expired and creds.refresh_token:
+        creds.refresh(requests.Request())
+        user.access_token = creds.token
+        user.token_expiry = creds.expiry
+        db.session.commit()
+
+    # Read new data format
+    data = request.json
+    name = data.get("name")
+    email = data.get("email")
+    price = data.get("price")
+
+    if not name or not email or not price:
+        return {"error": "Missing 'name', 'email', or 'price'"}, 400
+
+    # Build subject & body
+    subject = f"Booking Confirmation for {name}"
+    body_text = f"Hello {name},\n\nYour booking has been confirmed.\nTotal price: {price}\n\nThank you!"
+
+    # Create the email
+    message = MIMEText(body_text)
+    message['to'] = email
+    message['from'] = user.username
+    message['subject'] = subject
+
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+
+    # Send email via Gmail API
+    service = build('gmail', 'v1', credentials=creds)
+    try:
+        print('reachy')
+        service.users().messages().send(userId='me', body={'raw': raw_message}).execute()
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    return {"message": "Email sent successfully"}, 200
 
 
 if __name__ == '__main__':

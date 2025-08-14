@@ -10,6 +10,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     is_admin = db.Column(db.String(20), nullable=False)  # admin
+    access_token = db.Column(db.Text)
+    refresh_token = db.Column(db.Text)
+    token_expiry = db.Column(db.DateTime)
 
 
 class Booking(db.Model):

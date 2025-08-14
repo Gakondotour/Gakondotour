@@ -31,3 +31,6 @@ config.py
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
 /frontend/.env
+/backend/flask_session/
+/.idea/data_source_mapping.xml
+/.idea/dataSources.xml

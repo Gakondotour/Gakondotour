@@ -5,6 +5,7 @@ import { MDBInput, MDBBtn } from "mdb-react-ui-kit";
 import DatePicker from "react-datepicker";
 import ReCAPTCHA from "react-google-recaptcha";
 import "react-datepicker/dist/react-datepicker.css";
+const REACT_APP_ENV = process.env.REACT_APP_ENV;
 
 const Book = () => {
   const API_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000"; // Flask API URL
@@ -85,8 +86,7 @@ const Book = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormSubmitted(true);
-
-    if (!recaptchaToken) {
+      if (REACT_APP_ENV !== 'development'&&!recaptchaToken) {
       setError("Please complete the verification.");
       return;
     }

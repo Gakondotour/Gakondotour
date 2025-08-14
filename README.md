@@ -19,6 +19,8 @@ Built with modern technologies and elegant design principles, Gakondotour ensure
 - pip install Config
 - pip install gunicorn
 - pip install requests
+- pip install google-auth google-auth-oauthlib google-auth-httplib2
+
 
     
 - npm install axios
