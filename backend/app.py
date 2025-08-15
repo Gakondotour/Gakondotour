@@ -29,8 +29,10 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY')
-app.config["JWT_TOKEN_LOCATION"] = ["headers", "query_string"]
-app.config["JWT_QUERY_STRING_NAME"] = "token"
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+app.config["JWT_COOKIE_SECURE"] = True      # Only over HTTPS in production
+app.config["JWT_COOKIE_HTTPONLY"] = True    # Prevent JavaScript access
+app.config["JWT_COOKIE_SAMESITE"] = "Lax"
 
 
 
@@ -162,7 +164,7 @@ def login():
 # Admin/Manager Dashboard
 @app.route('/dashboard', methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
-def manage_data():
+def dashboard():
     current_user = get_jwt_identity()
     user = User.query.filter_by(username=current_user).first()
 
