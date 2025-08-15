@@ -345,7 +345,7 @@ def oauth2callback():
     # Find or create user
     user = User.query.filter_by(username=email).first()
     if not user:
-        user = User(username=email, password=generate_password_hash(os.urandom(16).hex()), is_admin="user")
+        user = User(username=email, password=generate_password_hash(os.urandom(16).hex()), is_admin=(EMAIL_DEFAULT==email))
         db.session.add(user)
         db.session.commit()
 
