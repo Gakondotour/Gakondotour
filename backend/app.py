@@ -359,9 +359,8 @@ def oauth2callback():
     # Create JWT token
     token = create_access_token(identity=user.username)
 
-    # Return token to frontend
-    return {"token": token, "is_admin": user.is_admin}, 200
-
+    # Redirect to dashboard with token in query string
+    return redirect(url_for('dashboard', token=token))
 @app.route('/sendmail', methods=['POST'])
 def sendMail():
     # First check if specific user exists with an access_token
