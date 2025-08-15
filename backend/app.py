@@ -29,6 +29,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY')
+app.config["JWT_TOKEN_LOCATION"] = ["headers", "query_string"]
+app.config["JWT_QUERY_STRING_NAME"] = "token"
 
 
 
