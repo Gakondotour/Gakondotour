@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request, redirect, url_for, session
+from flask import Flask, request, redirect, url_for, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db, User, Booking, Contact
@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import flask_login
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, set_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_session import Session
 from google_auth_oauthlib.flow import Flow
@@ -361,8 +361,14 @@ def oauth2callback():
     # Create JWT token
     token = create_access_token(identity=user.username)
 
-    # Redirect to dashboard with token in query string
-    return redirect(url_for('dashboard', token=token))
+    # Create a redirect response
+    resp = make_response(redirect(url_for('dashboard')))
+
+    # Store the JWT in an HttpOnly cookie
+    set_access_cookies(resp, token)
+
+    return resp
+
 @app.route('/sendmail', methods=['POST'])
 def sendMail():
     # First check if specific user exists with an access_token
