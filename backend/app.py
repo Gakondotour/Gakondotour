@@ -427,7 +427,7 @@ def sendMail():
 
     admin_email = user.username
     admin_subject = f"New Booking: {name}"
-    admin_body = f"A new booking has been made.\n\nName: {name}\nEmail: {email}\nPrice: {price} \n\n Activity: activity"
+    admin_body = f"A new booking has been made.\n\nName: {name}\nEmail: {email}\nPrice: {price} \n\n Activity: {activity}"
 
     admin_message = MIMEText(admin_body)
     admin_message['to'] = admin_email
