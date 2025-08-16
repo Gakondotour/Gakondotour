@@ -10,6 +10,10 @@ const ContactAdmin = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+   if (!token) {
+        navigate('login')
+    }
+
   const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(API_URL + "/contact_admin", {

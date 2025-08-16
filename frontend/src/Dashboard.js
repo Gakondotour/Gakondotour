@@ -17,6 +17,8 @@ const Dashboard = () => {
     if (token) {
         localStorage.setItem("token", token);
         localStorage.setItem("is_admin", isAdmin);
+    }else{
+        navigate('login')
     }
 
     const fetchData = useCallback(async () => {
