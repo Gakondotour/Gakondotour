@@ -22,7 +22,7 @@ const ConfirmationBooking = () => {
   const sendEmail = async function () {
       const templateParams = {
           name: booking.name,
-          activity: booking.activity,
+          activity: booking.activity.replace(/_/g, " "),
           email: booking.email,
           price: price,
       };
