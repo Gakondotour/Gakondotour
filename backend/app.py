@@ -402,6 +402,7 @@ def sendMail():
     name = data.get("name")
     email = data.get("email")
     price = data.get("price")
+    activity = data.get("activity")
 
     if not name or not email or not price:
         return {"error": "Missing 'name', 'email', or 'price'"}, 400
@@ -411,7 +412,7 @@ def sendMail():
 
     # --- Send to customer ---
     subject = f"Booking Confirmation for {name}"
-    body_text = f"Hello {name},\n\nYour booking has been confirmed.\nTotal price: {price}\n\nThank you!"
+    body_text = f"Hello {name},\n\nYour booking for \"{activity}\" has been confirmed.\nTotal price: {price}\n\nThank you!"
 
     message = MIMEText(body_text)
     message['to'] = email
@@ -426,7 +427,7 @@ def sendMail():
 
     admin_email = user.username
     admin_subject = f"New Booking: {name}"
-    admin_body = f"A new booking has been made.\n\nName: {name}\nEmail: {email}\nPrice: {price}"
+    admin_body = f"A new booking has been made.\n\nName: {name}\nEmail: {email}\nPrice: {price} \n\n Activity: activity"
 
     admin_message = MIMEText(admin_body)
     admin_message['to'] = admin_email

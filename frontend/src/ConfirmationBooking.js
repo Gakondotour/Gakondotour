@@ -22,6 +22,7 @@ const ConfirmationBooking = () => {
   const sendEmail = async function () {
       const templateParams = {
           name: booking.name,
+          activity: booking.activity,
           email: booking.email,
           price: price,
       };
