@@ -379,6 +379,7 @@ def sendMail():
 
     if not user:
         return {"error": "No user with valid Google credentials found"}, 400
+
     # Recreate credentials object
     creds = Credentials(
         token=user.access_token,
@@ -405,27 +406,40 @@ def sendMail():
     if not name or not email or not price:
         return {"error": "Missing 'name', 'email', or 'price'"}, 400
 
-    # Build subject & body
+    # Gmail service
+    service = build('gmail', 'v1', credentials=creds)
+
+    # --- Send to customer ---
     subject = f"Booking Confirmation for {name}"
     body_text = f"Hello {name},\n\nYour booking has been confirmed.\nTotal price: {price}\n\nThank you!"
 
-    # Create the email
     message = MIMEText(body_text)
     message['to'] = email
     message['from'] = user.username
     message['subject'] = subject
-
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
-    # Send email via Gmail API
-    service = build('gmail', 'v1', credentials=creds)
     try:
-        print('reachy')
         service.users().messages().send(userId='me', body={'raw': raw_message}).execute()
     except Exception as e:
-        return {"error": str(e)}, 500
+        return {"error": f"Failed to send customer email: {str(e)}"}, 500
 
-    return {"message": "Email sent successfully"}, 200
+    admin_email = user.username
+    admin_subject = f"New Booking: {name}"
+    admin_body = f"A new booking has been made.\n\nName: {name}\nEmail: {email}\nPrice: {price}"
+
+    admin_message = MIMEText(admin_body)
+    admin_message['to'] = admin_email
+    admin_message['from'] = user.username
+    admin_message['subject'] = admin_subject
+    raw_admin_message = base64.urlsafe_b64encode(admin_message.as_bytes()).decode()
+
+    try:
+        service.users().messages().send(userId='me', body={'raw': raw_admin_message}).execute()
+    except Exception as e:
+        return {"error": f"Failed to send admin email: {str(e)}"}, 500
+
+    return {"message": "Emails sent successfully"}, 200
 
 
 if __name__ == '__main__':
