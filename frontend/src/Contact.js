@@ -6,7 +6,7 @@ import Footer from "./Footer";
 import Nav from "./Nav";
 
 const Contact = () => {
-  const API_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000/contact"; 
+  const API_URL = process.env.REACT_APP_BACKEND_URL?process.env.REACT_APP_BACKEND_URL+'/contact':"http://127.0.0.1:5000/contact";
   const [dataContact, setDataContact] = useState({ name: "", email: "", text: "" });
   const navigate = useNavigate();
   const [error, setError] = useState("");

@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MDBBtn, MDBNavbarLink } from "mdb-react-ui-kit";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const ContactAdmin = () => {
   const [data, setData] = useState([]);
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  let logoutTimeout;
+  const token = localStorage.getItem("token");
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get(API_URL + "/contact_admin", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setData(response.data.contact_list || []);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!token) {
@@ -15,45 +27,16 @@ const ContactAdmin = () => {
     } else {
       fetchData();
     }
-
-    // Clear timeout if user navigates away
-    return () => clearTimeout(logoutTimeout);
-  }, [token, navigate]);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/contact_admin", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setData(response.data.contact_list || []);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  }, [token, navigate, fetchData]);
 
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        logoutTimeout = setTimeout(logout, 25000);
-      } else {
-        clearTimeout(logoutTimeout);
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
-
   const deleteData = async (id) => {
     try {
-      await axios.delete("http://localhost:5000/contact_admin", {
+      await axios.delete(API_URL + "/contact_admin", {
         headers: { Authorization: `Bearer ${token}` },
         data: { id },
       });
@@ -65,54 +48,75 @@ const ContactAdmin = () => {
 
   return (
     <div style={{ backgroundColor: "#fff" }}>
-      <h1 style={{ textAlign: "center" }}>messages</h1>
-      <table className="tableStyle" style={{ borderCollapse: "collapse", width: "100%" }}>
-        <tr>
-          <th style={{ border: "2px solid black", padding: "8px" }}>Full Name</th>
-          <th style={{ border: "2px solid black", padding: "8px" }}>Email</th>
-          <th style={{ border: "2px solid black", padding: "8px" }}>Text</th>
-          <th style={{ border: "2px solid black", padding: "8px" }}>Deletion</th>
-        </tr>
-
-        {data.length > 0 ? (
-            data.map((x) => (
-          <tr key={x.id}>
-            <td style={{ border: "2px solid black", padding: "8px" }}>{x.name}</td>
-            <td style={{ border: "2px solid black", padding: "8px" }}>{x.email}</td>
-            <td style={{ border: "2px solid black", padding: "8px" }}>{x.text}</td>
-            <td style={{ border: "2px solid black", padding: "8px" }}>
-              <MDBBtn
-                className="me-1"
-                color="danger"
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  const confirmBox = window.confirm(
-                    "Do you really want to delete this Booking?"
-                  );
-                  if (confirmBox === true) {
-                    deleteData(x.id);
-                  }
-                }}
-              >
-                Delete
-              </MDBBtn>
-            </td>
+      <h1 style={{ textAlign: "center" }}>Messages</h1>
+      <table
+        className="tableStyle"
+        style={{ borderCollapse: "collapse", width: "100%" }}
+      >
+        <thead>
+          <tr>
+            <th style={{ border: "2px solid black", padding: "8px" }}>
+              Full Name
+            </th>
+            <th style={{ border: "2px solid black", padding: "8px" }}>Email</th>
+            <th style={{ border: "2px solid black", padding: "8px" }}>Text</th>
+            <th style={{ border: "2px solid black", padding: "8px" }}>
+              Deletion
+            </th>
           </tr>
-        ))): null}
+        </thead>
+        <tbody>
+          {data.map((x) => (
+            <tr key={x.id}>
+              <td style={{ border: "2px solid black", padding: "8px" }}>
+                {x.name}
+              </td>
+              <td style={{ border: "2px solid black", padding: "8px" }}>
+                {x.email}
+              </td>
+              <td style={{ border: "2px solid black", padding: "8px" }}>
+                {x.text}
+              </td>
+              <td style={{ border: "2px solid black", padding: "8px" }}>
+                <MDBBtn
+                  className="me-1"
+                  color="danger"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Do you really want to delete this message?"
+                      )
+                    ) {
+                      deleteData(x.id);
+                    }
+                  }}
+                >
+                  Delete
+                </MDBBtn>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
 
       <MDBBtn
         className="me-1"
         color="success"
-        style={{ margin: "10px", cursor: "pointer", position:'absolute', bottom:"0%"  }}
+        style={{
+          margin: "10px",
+          cursor: "pointer",
+          position: "absolute",
+          bottom: "0%",
+        }}
         onClick={logout}
       >
         Logout
       </MDBBtn>
       <MDBNavbarLink
-        style={{ margin: "10px", cursor: "pointer", color: "darkGreen"}}
+        style={{ margin: "10px", cursor: "pointer", color: "darkGreen" }}
         className="link-hover"
-        href="/Dashboard"
+        href="/dashboard"
       >
         <strong>Dashboard</strong>
       </MDBNavbarLink>

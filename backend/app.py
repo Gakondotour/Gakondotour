@@ -29,11 +29,17 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY')
-app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-app.config["JWT_COOKIE_SECURE"] = True      # Only over HTTPS in production
-app.config["JWT_COOKIE_HTTPONLY"] = True    # Prevent JavaScript access
-app.config["JWT_COOKIE_SAMESITE"] = "Lax"
-
+# app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+# app.config["JWT_COOKIE_SECURE"] = True      # Only over HTTPS in production
+# app.config["JWT_COOKIE_HTTPONLY"] = True    # Prevent JavaScript access
+# app.config["JWT_COOKIE_SAMESITE"] = "Lax"
+EMAIL_DEFAULT = os.environ.get('EMAIL_DEFAULT')
+# Load sensitive variables from environment
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+GOOGLE_AUTH_REDIRECT_URL = os.environ.get('GOOGLE_AUTH_REDIRECT_URL')
+SCOPES = ['openid','https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/userinfo.email']
+FRONTEND_URL=os.environ.get('FRONTEND_URL')
 
 
 Session(app)
@@ -279,12 +285,6 @@ def manage_text():
             return {"message": "Contact deleted successfully"}, 200
         return {"message": "Contact not found"}, 404
 
-EMAIL_DEFAULT = os.environ.get('EMAIL_DEFAULT')
-# Load sensitive variables from environment
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
-GOOGLE_AUTH_REDIRECT_URL = os.environ.get('GOOGLE_AUTH_REDIRECT_URL')
-SCOPES = ['openid','https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/userinfo.email']
 
 @app.route('/authorize')
 def authorize():
@@ -363,13 +363,8 @@ def oauth2callback():
     # Create JWT token
     token = create_access_token(identity=user.username)
 
-    # Create a redirect response
-    resp = make_response(redirect(url_for('dashboard')))
-
-    # Store the JWT in an HttpOnly cookie
-    set_access_cookies(resp, token)
-
-    return resp
+    redirect_url = f"{FRONTEND_URL}/dashboard?token={token}&is_admin={user.is_admin}"
+    return redirect(redirect_url)
 
 @app.route('/sendmail', methods=['POST'])
 def sendMail():
