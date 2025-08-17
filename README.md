@@ -35,6 +35,10 @@ Built with modern technologies and elegant design principles, Gakondotour ensure
 
     - npm Install web-vitals to using npm install web-vitals.
 
+## Stop tracking db
+
+- git update-index --assume-unchanged backend/instance/sqlite.db
+
 ## 🚀 Tech Stack
 - Flask : Backend framework for API development & routing
 - React : Frontend library for building interactive UIs
